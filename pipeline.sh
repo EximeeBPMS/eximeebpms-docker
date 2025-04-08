@@ -14,7 +14,7 @@ else
   VERSION_ARGUMENT="--build-arg VERSION=${VERSION}"
 fi
 
-IMAGE_NAME=camunda/camunda-bpm-platform:${DISTRO}-${PLATFORM}
+IMAGE_NAME=eximeebpms/eximeebpms-bpm-platform:${DISTRO}-${PLATFORM}
 
 docker buildx build .                         \
     -t "${IMAGE_NAME}"                        \

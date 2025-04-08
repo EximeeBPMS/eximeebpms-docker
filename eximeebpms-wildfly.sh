@@ -3,7 +3,7 @@ set -Eeu
 
 trap 'Error on line $LINENO' ERR
 
-source $(dirname "$0")/camunda-lib.sh
+source $(dirname "$0")/eximeebpms-lib.sh
 
 # Set default values for DB_ variables
 # Set Password as Docker Secrets for Swarm-Mode
@@ -13,7 +13,7 @@ fi
 
 DB_DRIVER=${DB_DRIVER:-org.h2.Driver}
 DB_PASSWORD=${DB_PASSWORD:-sa}
-DB_URL=${DB_URL:-jdbc:h2:./camunda-h2-dbs/process-engine;TRACE_LEVEL_FILE=0;DB_CLOSE_ON_EXIT=FALSE}
+DB_URL=${DB_URL:-jdbc:h2:./eximeebpms-h2-dbs/process-engine;TRACE_LEVEL_FILE=0;DB_CLOSE_ON_EXIT=FALSE}
 DB_USERNAME=${DB_USERNAME:-sa}
 
 function modify_datasource {
@@ -31,8 +31,8 @@ embed-server
 run-batch
 stop-embedded-server
 EOF
-  /camunda/bin/jboss-cli.sh --file=batch.cli
-  rm -rf /camunda/standalone/configuration/standalone_xml_history/current/* batch.cli
+  /eximeebpms/bin/jboss-cli.sh --file=batch.cli
+  rm -rf /eximeebpms/standalone/configuration/standalone_xml_history/current/* batch.cli
 }
 
 # support legacy DB_DRVIER short names
@@ -65,7 +65,7 @@ fi
 export PREPEND_JAVA_OPTS="-Djboss.bind.address=0.0.0.0 -Djboss.bind.address.management=0.0.0.0 -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true -Djboss.modules.system.pkgs=${JBOSS_MODULES_SYSTEM_PKGS}"
 export LAUNCH_JBOSS_IN_BACKGROUND=TRUE
 
-CMD="/camunda/bin/standalone.sh"
+CMD="/eximeebpms/bin/standalone.sh"
 
 if [ "${DEBUG}" = "true" ]; then
   echo "Enabling debug mode, JPDA accesible under port 8000"
@@ -76,10 +76,10 @@ if [ "$JMX_PROMETHEUS" = "true" ] ; then
   echo "Enabling Prometheus JMX Exporter on port ${JMX_PROMETHEUS_PORT}"
   [ ! -f "$JMX_PROMETHEUS_CONF" ] && touch "$JMX_PROMETHEUS_CONF"
   # See https://github.com/prometheus/jmx_exporter/issues/344
-  LOG_MANAGER_PATH=$(find /camunda/modules -name "jboss-logmanager*.jar")
-  COMMON_PATH=$(find /camunda/modules -name "wildfly-common*.jar")
+  LOG_MANAGER_PATH=$(find /eximeebpms/modules -name "jboss-logmanager*.jar")
+  COMMON_PATH=$(find /eximeebpms/modules -name "wildfly-common*.jar")
   export PREPEND_JAVA_OPTS="${PREPEND_JAVA_OPTS} -Dsun.util.logging.disableCallerCheck=true -Djava.util.logging.manager=org.jboss.logmanager.LogManager -Xbootclasspath/a:$LOG_MANAGER_PATH:$COMMON_PATH"
-  export PREPEND_JAVA_OPTS="${PREPEND_JAVA_OPTS} -javaagent:/camunda/javaagent/jmx_prometheus_javaagent.jar=${JMX_PROMETHEUS_PORT}:${JMX_PROMETHEUS_CONF}"
+  export PREPEND_JAVA_OPTS="${PREPEND_JAVA_OPTS} -javaagent:/eximeebpms/javaagent/jmx_prometheus_javaagent.jar=${JMX_PROMETHEUS_PORT}:${JMX_PROMETHEUS_CONF}"
 fi
 
 wait_for_it

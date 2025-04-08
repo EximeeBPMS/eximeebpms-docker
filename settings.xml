@@ -4,6 +4,7 @@
           xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
   <localRepository>m2-repository</localRepository>
   <servers>
+<!--    ZMIANA ID?-->
     <server>
       <id>camunda-nexus</id>
       <username>${env.USER}</username>
@@ -12,6 +13,7 @@
   </servers>
   <mirrors>
     <mirror>
+      <!--    ZMIANA ID?-->
       <id>camunda-nexus</id>
       <mirrorOf>camunda-nexus</mirrorOf>
       <name>Camunda Nexus</name>

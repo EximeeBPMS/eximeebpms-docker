@@ -3,10 +3,10 @@ set -Eeu
 
 trap 'Error on line $LINENO' ERR
 
-source $(dirname "$0")/camunda-lib.sh
+source $(dirname "$0")/eximeebpms-lib.sh
 
 # Use existing tomcat distribution if present..
-CATALINA_HOME="${CATALINA_HOME:-/camunda}"
+CATALINA_HOME="${CATALINA_HOME:-/eximeebpms}"
 
 # Set default values for DB_ variables
 # Set Password as Docker Secrets for Swarm-Mode
@@ -16,7 +16,7 @@ fi
 
 DB_DRIVER=${DB_DRIVER:-org.h2.Driver}
 DB_PASSWORD=${DB_PASSWORD:-sa}
-DB_URL=${DB_URL:-jdbc:h2:./camunda-h2-dbs/process-engine;TRACE_LEVEL_FILE=0;DB_CLOSE_ON_EXIT=FALSE}
+DB_URL=${DB_URL:-jdbc:h2:./eximeebpms-h2-dbs/process-engine;TRACE_LEVEL_FILE=0;DB_CLOSE_ON_EXIT=FALSE}
 DB_USERNAME=${DB_USERNAME:-sa}
 
 XML_JDBC="//Resource[@name='jdbc/ProcessEngine']"
@@ -55,7 +55,7 @@ fi
 if [ "$JMX_PROMETHEUS" = "true" ] ; then
   echo "Enabling Prometheus JMX Exporter on port ${JMX_PROMETHEUS_PORT}"
   [ ! -f "$JMX_PROMETHEUS_CONF" ] && touch "$JMX_PROMETHEUS_CONF"
-  export CATALINA_OPTS="${CATALINA_OPTS:=} -javaagent:/camunda/javaagent/jmx_prometheus_javaagent.jar=${JMX_PROMETHEUS_PORT}:${JMX_PROMETHEUS_CONF}"
+  export CATALINA_OPTS="${CATALINA_OPTS:=} -javaagent:/eximeebpms/javaagent/jmx_prometheus_javaagent.jar=${JMX_PROMETHEUS_PORT}:${JMX_PROMETHEUS_CONF}"
 fi
 
 CMD+=" run"

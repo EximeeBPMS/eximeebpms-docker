@@ -57,16 +57,16 @@ function poll_log {
 
 function create_user {
   rm -f dumped-headers.txt
-  curl --dump-header dumped-headers.txt --fail -s -o/dev/null http://localhost:8080/camunda/app/admin/default/setup/
-  curl -XPOST --cookie dumped-headers.txt -H "$(cat dumped-headers.txt | grep X-XSRF-TOKEN | tr -d '\r\n')" -H "Accept: application/json" -H "Content-Type: application/json" --fail -s --data '{"profile":{"id":"demo", "firstName":"Demo", "lastName":"Demo", "email":""}, "credentials":{"password":"demo"}}' -o/dev/null http://localhost:8080/camunda/api/admin/setup/default/user/create
+  curl --dump-header dumped-headers.txt --fail -s -o/dev/null http://localhost:8080/eximeebpms/app/admin/default/setup/
+  curl -XPOST --cookie dumped-headers.txt -H "$(cat dumped-headers.txt | grep X-XSRF-TOKEN | tr -d '\r\n')" -H "Accept: application/json" -H "Content-Type: application/json" --fail -s --data '{"profile":{"id":"demo", "firstName":"Demo", "lastName":"Demo", "email":""}, "credentials":{"password":"demo"}}' -o/dev/null http://localhost:8080/eximeebpms/api/admin/setup/default/user/create
 }
 
 function test_login {
-  logger "Attempting login to http://localhost:8080/camunda/api/admin/auth/user/default/login/${1}"
+  logger "Attempting login to http://localhost:8080/eximeebpms/api/admin/auth/user/default/login/${1}"
   rm -f dumped-headers.txt
-  curl --dump-header dumped-headers.txt --fail -s -o/dev/null http://127.0.0.1:8080/camunda/app/${1}/default/
+  curl --dump-header dumped-headers.txt --fail -s -o/dev/null http://127.0.0.1:8080/eximeebpms/app/${1}/default/
   # dumped-headers.txt uses windows line endings, drop them
-  curl --cookie dumped-headers.txt -H "$(cat dumped-headers.txt | grep X-XSRF-TOKEN | tr -d '\r\n')" -H "Accept: application/json" --fail -s --data 'username=demo&password=demo' -o/dev/null http://127.0.0.1:8080/camunda/api/admin/auth/user/default/login/${1}
+  curl --cookie dumped-headers.txt -H "$(cat dumped-headers.txt | grep X-XSRF-TOKEN | tr -d '\r\n')" -H "Accept: application/json" --fail -s --data 'username=demo&password=demo' -o/dev/null http://127.0.0.1:8080/eximeebpms/api/admin/auth/user/default/login/${1}
 }
 
 function test_encoding {

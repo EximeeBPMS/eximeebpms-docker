@@ -1,6 +1,6 @@
 FROM alpine:3.18 as builder
 
-ARG VERSION=7.24.0
+ARG VERSION=0.9.0
 ARG DISTRO=tomcat
 ARG SNAPSHOT=true
 
@@ -26,19 +26,18 @@ RUN apk add --no-cache \
         wget \
         xmlstarlet
 
-COPY settings.xml download.sh camunda-run.sh camunda-tomcat.sh camunda-wildfly.sh  /tmp/
+COPY settings.xml download.sh eximeebpms-run.sh eximeebpms-tomcat.sh eximeebpms-wildfly.sh  /tmp/
 
 RUN /tmp/download.sh
-COPY camunda-lib.sh /camunda/
+COPY eximeebpms-lib.sh /eximeebpms/
 
 
 ##### FINAL IMAGE #####
 
 FROM alpine:3.18
 
-ARG VERSION=7.24.0
+ARG VERSION=0.9.0
 
-ENV CAMUNDA_VERSION=${VERSION}
 ENV DB_DRIVER=
 ENV DB_URL=
 ENV DB_USERNAME=
@@ -55,7 +54,7 @@ ENV TZ=UTC
 ENV DEBUG=false
 ENV JAVA_OPTS=""
 ENV JMX_PROMETHEUS=false
-ENV JMX_PROMETHEUS_CONF=/camunda/javaagent/prometheus-jmx.yml
+ENV JMX_PROMETHEUS_CONF=/eximeebpms/javaagent/prometheus-jmx.yml
 ENV JMX_PROMETHEUS_PORT=9404
 
 EXPOSE 8080 8000 9404
@@ -74,12 +73,12 @@ RUN apk add --no-cache \
       "https://raw.githubusercontent.com/vishnubob/wait-for-it/a454892f3c2ebbc22bd15e446415b8fcb7c1cfa4/wait-for-it.sh" \
     && chmod +x /usr/local/bin/wait-for-it.sh
 
-RUN addgroup -g 1000 -S camunda && \
-    adduser -u 1000 -S camunda -G camunda -h /camunda -s /bin/bash -D camunda
-WORKDIR /camunda
-USER camunda
+RUN addgroup -g 1000 -S eximeebpms && \
+    adduser -u 1000 -S eximeebpms -G eximeebpms -h /eximeebpms -s /bin/bash -D eximeebpms
+WORKDIR /eximeebpms
+USER eximeebpms
 
 ENTRYPOINT ["/sbin/tini", "--"]
-CMD ["./camunda.sh"]
+CMD ["./eximeebpms.sh"]
 
-COPY --chown=camunda:camunda --from=builder /camunda .
+COPY --chown=eximeebpms:eximeebpms --from=builder /eximeebpms .

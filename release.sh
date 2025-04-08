@@ -8,7 +8,7 @@ PLATFORMS=${PLATFORMS:-linux/amd64}
 NEXUS_USER=${NEXUS_USER:-}
 NEXUS_PASS=${NEXUS_PASS:-}
 
-IMAGE=camunda/camunda-bpm-platform
+IMAGE=eximeebpms/eximeebpms-bpm-platform
 
 function build_and_push {
     local tags=("$@")
