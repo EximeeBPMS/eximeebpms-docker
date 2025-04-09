@@ -59,7 +59,7 @@ if [ -n "$MAVEN_PROXY_HOST" ] ; then
 fi
 
 # GitHub Packages URL with repository
-mvn dependency:get -U -B --settings ~/.m2/settings.xml \
+mvn dependency:get -U -B --global-settings /tmp/settings.xml \
     $PROXY \
     -DremoteRepositories="github-packages::::https://maven.pkg.github.com/EximeeBPMS/eximeebpms" \
     -DgroupId="${ARTIFACT_GROUP}" -DartifactId="${ARTIFACT}" \
@@ -76,11 +76,11 @@ esac
 cp /tmp/eximeebpms-${GROUP}.sh /eximeebpms/eximeebpms.sh
 
 # download and register database drivers from GitHub Packages
-mvn dependency:get -U -B --settings ~/.m2/settings.xml \
-  $PROXY \
-  -DremoteRepositories="github-packages::::https://maven.pkg.github.com/EximeeBPMS/eximeebpms" \
-  -DgroupId="org.eximeebpms.bpm" -DartifactId="eximeebpms-database-settings" \
-  -Dversion="${ARTIFACT_VERSION}" -Dpackaging="pom" -Dtransitive=false
+mvn dependency:get -U -B --global-settings /tmp/settings.xml \
+    $PROXY \
+    -DremoteRepositories="github-packages::::https://maven.pkg.github.com/EximeeBPMS/eximeebpms" \
+    -DgroupId="org.eximeebpms.bpm" -DartifactId="eximeebpms-database-settings" \
+    -Dversion="${ARTIFACT_VERSION}" -Dpackaging="pom" -Dtransitive=false
 
 cambpmdbsettings_pom_file=$(find /m2-repository -name "eximeebpms-database-settings-${ARTIFACT_VERSION}.pom" -print | head -n 1)
 if [ -z "$MYSQL_VERSION" ]; then
