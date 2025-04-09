@@ -27,7 +27,6 @@ RUN apk add --no-cache \
         xmlstarlet
 
 COPY settings.xml download.sh eximeebpms-run.sh eximeebpms-tomcat.sh eximeebpms-wildfly.sh  /tmp/
-COPY m2-repo / /m2-repository/
 
 RUN /tmp/download.sh
 COPY eximeebpms-lib.sh /eximeebpms/
