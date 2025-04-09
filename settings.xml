@@ -3,21 +3,19 @@
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
   <localRepository>m2-repository</localRepository>
-  <servers>
-<!--    ZMIANA ID?-->
-    <server>
-      <id>camunda-nexus</id>
-      <username>${env.USER}</username>
-      <password>${env.PASSWORD}</password>
-    </server>
-  </servers>
-  <mirrors>
-    <mirror>
-      <!--    ZMIANA ID?-->
-      <id>camunda-nexus</id>
-      <mirrorOf>camunda-nexus</mirrorOf>
-      <name>Camunda Nexus</name>
-      <url>https://repository.nexus.camunda.cloud/content/groups/internal/</url>
-    </mirror>
-  </mirrors>
+<!--  <servers>-->
+<!--    <server>-->
+<!--      <id>camunda-nexus</id>-->
+<!--      <username>${env.USER}</username>-->
+<!--      <password>${env.PASSWORD}</password>-->
+<!--    </server>-->
+<!--  </servers>-->
+<!--  <mirrors>-->
+<!--    <mirror>-->
+<!--      <id>camunda-nexus</id>-->
+<!--      <mirrorOf>camunda-nexus</mirrorOf>-->
+<!--      <name>Camunda Nexus</name>-->
+<!--      <url>https://repository.nexus.camunda.cloud/content/groups/internal/</url>-->
+<!--    </mirror>-->
+<!--  </mirrors>-->
 </settings>

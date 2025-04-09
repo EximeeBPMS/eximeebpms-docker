@@ -59,7 +59,7 @@ if [ -n "$MAVEN_PROXY_HOST" ] ; then
 fi
 
 # GitHub Packages URL with repository
-mvn dependency:get -U -B --global-settings /tmp/settings.xml \
+mvn dependency:get -B --global-settings /tmp/settings.xml \
     $PROXY \
     -DremoteRepositories="github-packages::::https://maven.pkg.github.com/EximeeBPMS/eximeebpms" \
     -DgroupId="${ARTIFACT_GROUP}" -DartifactId="${ARTIFACT}" \
@@ -76,7 +76,7 @@ esac
 cp /tmp/eximeebpms-${GROUP}.sh /eximeebpms/eximeebpms.sh
 
 # download and register database drivers from GitHub Packages
-mvn dependency:get -U -B --global-settings /tmp/settings.xml \
+mvn dependency:get -B --global-settings /tmp/settings.xml \
     $PROXY \
     -DremoteRepositories="github-packages::::https://maven.pkg.github.com/EximeeBPMS/eximeebpms" \
     -DgroupId="org.eximeebpms.bpm" -DartifactId="eximeebpms-database-settings" \
