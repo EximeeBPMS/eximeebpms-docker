@@ -12,7 +12,7 @@ on:
 jobs:
   build-and-test-ee:
     if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-22.04
+    runs-on: self-hosted
     strategy:
       matrix:
         DISTRO: [tomcat, wildfly, run]

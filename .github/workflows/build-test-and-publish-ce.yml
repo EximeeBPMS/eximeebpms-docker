@@ -2,7 +2,7 @@ name: Build, test, and publish CE
 on: [pull_request, push, workflow_dispatch]
 jobs:
   build-and-test:
-    runs-on: ubuntu-22.04
+    runs-on: self-hosted
     strategy:
       fail-fast: false
       matrix:
@@ -44,7 +44,7 @@ jobs:
           EE: false
           PLATFORM: ${{ matrix.PLATFORM }}
   publish:
-    runs-on: ubuntu-24.04
+    runs-on: self-hosted
     needs: build-and-test
     if: ${{ github.ref == 'refs/heads/next' || startsWith(github.ref, 'refs/heads/7.') }}
     strategy:
