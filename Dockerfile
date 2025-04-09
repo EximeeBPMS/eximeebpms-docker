@@ -1,4 +1,4 @@
-FROM alpine:3.18 as builder
+FROM alpine:3.18 AS builder
 
 ARG VERSION=0.9.0
 ARG DISTRO=tomcat
