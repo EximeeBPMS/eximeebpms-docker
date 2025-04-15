@@ -1,41 +1,40 @@
-# Camunda Platform Docker images
+# EximeeBPMS Docker images
 
-> Use our [GitHub issue tracker](https://github.com/camunda/camunda-bpm-platform/issues) for bug reports or feature requests.
-> For help requests, open a help request topic on the [Camunda forum](https://forum.camunda.org/) or [a help request support ticket](https://camunda.com/services/enterprise-support-guide/#how-to-create-a-support-issue) if you are an enterprise customer.
+> Use our [GitHub issue tracker](https://github.com/EximeeBPMS/eximeebpms/issues) for bug reports or feature requests.
 
-This Camunda project provides docker images of the latest 
-Camunda Platform releases. The images can be used to demonstrate and test the
-Camunda Platform or can be extended with own process applications. It is
+This EximeeBPMS project provides docker images of the latest
+EximeeBPMS releases. The images can be used to demonstrate and test the
+EximeeBPMS or can be extended with own process applications. It is
 planned to provide images on the official [docker registry][] for every upcoming
 release, which includes alpha releases.
 
-The Camunda Platform Docker images are wrappers for the pre-packaged Camunda
+The EximeeBPMS Docker images are wrappers for the pre-packaged EximeeBPMS
 distributions. The pre-packaged distributions are intended for users who want a 
 getting started experience. In case you want to use the Camunda Docker images 
-in production, consider reading our [security instructions](https://docs.camunda.org/manual/latest/user-guide/security/).
+in production, consider reading our [security instructions](https://docs.eximeebpms.org/manual/latest/user-guide/security/).
 
 ## Distributions
 
 You can find more detailed documentation on the pre-packaged (community) 
 distributions that Camunda provides at the following links:
 
-* Apache Tomcat - [Camunda Tomcat integration documentation](https://docs.camunda.org/manual/latest/user-guide/runtime-container-integration/tomcat/)
-* Wildfly - [Camunda Wildfly Subsystem documentation](https://docs.camunda.org/manual/latest/user-guide/runtime-container-integration/jboss/)
-* Camunda Platform Run - [documentation](https://docs.camunda.org/manual/latest/user-guide/camunda-bpm-run/)
+* Apache Tomcat - [EximeeBPMS Tomcat integration documentation](https://docs.eximeebpms.org/manual/latest/user-guide/runtime-container-integration/tomcat/)
+* Wildfly - [EximeeBPMS Wildfly Subsystem documentation](https://docs.eximeebpms.org/manual/latest/user-guide/runtime-container-integration/jboss/)
+* Camunda Platform Run - [documentation](https://docs.eximeebpms.org/manual/latest/user-guide/camunda-bpm-run/)
 
 ## Get started
 
-To start a Docker container of the latest Camunda Platform 7 release:
+To start a Docker container of the latest EximeeBPMS release:
 
 ```
-docker pull camunda/camunda-bpm-platform:latest
-docker run -d --name camunda -p 8080:8080 camunda/camunda-bpm-platform:latest
+docker pull EximeeBPMS/eximeebpms:latest
+docker run -d --name eximeebpms -p 8080:8080 EximeeBPMS/eximeebpms:latest
 ```
 
 ### Tasklist, Cockpit, Admin web apps
 
-The three Camunda web apps are accessible through the landing page: 
-http://localhost:8080/camunda-welcome/index.html
+The three EximeeBPMS web apps are accessible through the landing page: 
+http://localhost:8080/eximeebpms-welcome/index.html
 
 The default credentials for admin access to the web apps is:
 
@@ -44,9 +43,9 @@ The default credentials for admin access to the web apps is:
 
 ### REST API
 
-The Camunda Rest-API is accessible through: http://localhost:8080/engine-rest
+The EximeeBPMS Rest-API is accessible through: http://localhost:8080/engine-rest
 
-See the [REST API](https://docs.camunda.org/manual/latest/reference/rest/)
+See the [REST API](https://docs.eximeebpms.org/manual/latest/reference/rest/)
 documentation for more details on how to use it.
 
 **Note**: The REST API does not require authentication by default. Follow the instructions from the [documentation](https://docs.camunda.org/manual/latest/reference/rest/overview/authentication/)
@@ -71,18 +70,18 @@ application server distributions of Camunda Platform.
 If no `${DISTRO}` is specified, the `tomcat` distribution is used. For all 
 available tags see the [docker hub tags][].
 
-## Camunda Platform 7 configuration
+## EximeeBPMS configuration
 
-You can find the complete Camunda documentation at https://docs.camunda.org/.
+You can find the complete Camunda documentation at https://docs.eximeebpms.org/.
 
 If you prefer to start your Camunda Docker image right away, you will find the
 following links useful:
 
-* [Camunda Platform configuration file properties](https://docs.camunda.org/manual/latest/reference/deployment-descriptors/descriptors/bpm-platform-xml/)
-* [Process Engine Plugins guide](https://docs.camunda.org/manual/latest/user-guide/process-engine/process-engine-plugins/)
-* [Camunda Logging](https://docs.camunda.org/manual/latest/user-guide/logging/)
+* [EximeeBPMS configuration file properties](https://docs.eximeebpms.org/manual/latest/reference/deployment-descriptors/descriptors/bpm-platform-xml/)
+* [Process Engine Plugins guide](https://docs.eximeebpms.org/manual/latest/user-guide/process-engine/process-engine-plugins/)
+* [Camunda Logging](https://docs.eximeebpms.org/manual/latest/user-guide/logging/)
 
-## Camunda Docker image configuration
+## EximeeBPMS Docker image configuration
 
 ### Configuration of the `run` distribution
 
@@ -100,7 +99,7 @@ the respective environment variables. For example:
 When not set or otherwise specified, the integrated H2 database is used.
 
 Any other `SPRING_*` variables can be used to further configure the app. 
-Alternatively, a `default.yml` file can be mounted to `/camunda/configuration/default.yml`.
+Alternatively, a `default.yml` file can be mounted to `/eximeebpms/configuration/default.yml`.
 More information on configuring Spring Boot applications can be found in the 
 [Spring Boot documentation](https://docs.spring.io/spring-boot/docs/current/reference/html/spring-boot-features.html#boot-features-external-config).
 
@@ -127,29 +126,26 @@ example:
 Enable only web apps:
 
 ```bash
-docker run camunda/camunda-bpm-platform:run ./camunda.sh --webapps
+docker run EximeeBPMS/eximeebpms:run ./eximeebpms.sh --webapps
 ``` 
 Enable only REST API and Swagger UI:
 ```bash
-docker run camunda/camunda-bpm-platform:run ./camunda.sh --rest --swaggerui
+docker run EximeeBPMS/eximeebpms:run ./eximeebpms.sh --rest --swaggerui
 ```
 
 Additionally, a `--production` parameter is supported to switch the 
-configuration to `/camunda/configuration/production.yml`. This parameter also 
+configuration to `/eximeebpms/configuration/production.yml`. This parameter also 
 disables Swagger UI by default.
 
 ### Java versions
 
 Our docker images are using a LTS OpenJDK version supported by
-Camunda Platform. This currently means:
+EximeeBPMS. This currently means:
 
- - Camunda 7.20 or later will be based on OpenJDK 17.
-   - Camunda 7.20 image for Camunda Run is supported only for JDK 17.
- - Camunda 7.12 - 7.19 is based on OpenJDK 11.
-   - Camunda 7.19 image for WildFly is supported only for JDK 11 and JDK 17.
- - All previous versions are based on OpenJDK 8.
+ - EximeeBPMS 1.0 or later will be based on OpenJDK 17.
+   - EximeeBPMS 1.0 image for EximeeBPMS Run is supported only for JDK 17.
 
-While all the OpenJDK versions supported by Camunda will work with the exceptions specified above,
+While all the OpenJDK versions supported by EximeeBPMS will work with the exceptions specified above,
 we will not provide ready to use images for them.
 
 #### Java options
@@ -188,7 +184,7 @@ variables:
 - `DB_VALIDATE_ON_BORROW` validate database connections before they are used (default: `false`)
 - `DB_VALIDATION_QUERY` the query to execute to validate database connections (default: `"SELECT 1"`)
 - `DB_PASSWORD_FILE` this supports [Docker Secrets](https://docs.docker.com/engine/swarm/secrets/). 
-  Put here the path of the secret, e.g. `/run/secrets/camunda_db_password`. 
+  Put here the path of the secret, e.g. `/run/secrets/eximeebpms_db_password`. 
   Make sure that `DB_PASSWORD` is not set when using this variable!
 - `SKIP_DB_CONFIG` skips the automated database configuration to use manual
   configuration
@@ -202,13 +198,13 @@ platform as follows:
 # start postgresql image with database and user configured
 docker run -d --name postgresql ...
 
-docker run -d --name camunda -p 8080:8080 --link postgresql:db \
+docker run -d --name eximeebpms -p 8080:8080 --link postgresql:db \
            -e DB_DRIVER=org.postgresql.Driver \
            -e DB_URL=jdbc:postgresql://db:5432/process-engine \
-           -e DB_USERNAME=camunda \
-           -e DB_PASSWORD=camunda \
+           -e DB_USERNAME=eximeebpms \
+           -e DB_PASSWORD=eximeebpms \
            -e WAIT_FOR=db:5432 \
-           camunda/camunda-bpm-platform:latest
+           EximeeBPMS/eximeebpms:latest
 ```
 
 Another option is to save the database config to an environment file, i.e.
@@ -217,16 +213,16 @@ Another option is to save the database config to an environment file, i.e.
 ```
 DB_DRIVER=org.postgresql.Driver
 DB_URL=jdbc:postgresql://db:5432/process-engine
-DB_USERNAME=camunda
-DB_PASSWORD=camunda
+DB_USERNAME=eximeebpms
+DB_PASSWORD=eximeebpms
 WAIT_FOR=db:5432
 ```
 
 Use this file to start the container:
 
 ```
-docker run -d --name camunda -p 8080:8080 --link postgresql:db \
-           --env-file db-env.txt camunda/camunda-bpm-platform:latest
+docker run -d --name eximeebpms -p 8080:8080 --link postgresql:db \
+           --env-file db-env.txt EximeeBPMS/eximeebpms:latest
 ```
 
 The docker image already contains drivers for `h2`, `mysql`, and `postgresql`.
@@ -239,16 +235,16 @@ own configuration set the environment variable `SKIP_DB_CONFIG` to a non-empty
 value:
 
 ```
-docker run -d --name camunda -p 8080:8080 -e SKIP_DB_CONFIG=true \
-           camunda/camunda-bpm-platform:latest
+docker run -d --name eximeebpms -p 8080:8080 -e SKIP_DB_CONFIG=true \
+           EximeeBPMS/eximeebpms:latest
 ```
 
 ### Waiting for database
 
-Starting the Camunda Platform Docker image requires the database to be already 
-available. This is quite a challenge when the database and Camunda Platform are 
+Starting the EximeeBPMS Docker image requires the database to be already 
+available. This is quite a challenge when the database and EximeeBPMS are 
 both docker containers spawned simultaneously, for example, by `docker compose` 
-or inside a Kubernetes Pod. To help with that, the Camunda Platform Docker image 
+or inside a Kubernetes Pod. To help with that, the EximeeBPMS Docker image 
 includes [wait-for-it.sh](https://github.com/vishnubob/wait-for-it) to allow the 
 container to wait until a 'host:port' is ready. The mechanism can be configured 
 by two environment variables:
@@ -257,7 +253,7 @@ by two environment variables:
 - `WAIT_FOR`: the service `host:port` to wait for. You can provide multiple
 host-port pairs separated by a comma or an empty space (Example:
 `"host1:port1 host2:port2"`).
-The `WAIT_FOR_TIMEOUT` applies to each specified host, i.e. Camunda will wait for
+The `WAIT_FOR_TIMEOUT` applies to each specified host, i.e. EximeeBPMS will wait for
 `host1:port1` to become available and, if unavailable for the complete `WAIT_FOR_TIMEOUT`
 duration, will wait for `host2:port2` for another `WAIT_FOR_TIMEOUT` period.
 
@@ -266,21 +262,21 @@ Example with a PostgreSQL container:
 ```
 docker run -d --name postgresql ...
 
-docker run -d --name camunda -p 8080:8080 --link postgresql:db \
+docker run -d --name eximeebpms -p 8080:8080 --link postgresql:db \
            -e DB_DRIVER=org.postgresql.Driver \
            -e DB_URL=jdbc:postgresql://db:5432/process-engine \
-           -e DB_USERNAME=camunda \
-           -e DB_PASSWORD=camunda \
+           -e DB_USERNAME=eximeebpms \
+           -e DB_PASSWORD=eximeebpms \
            -e WAIT_FOR=db:5432 \
            -e WAIT_FOR_TIMEOUT=60 \
-           camunda/camunda-bpm-platform:latest
+           EximeeBPMS/eximeebpms:latest
 ```
 
 ### Volumes
 
-Camunda Platform is installed inside the `/camunda` directory. Which
-means the Apache Tomcat configuration files are inside the `/camunda/conf/` 
-directory and the deployments on Apache Tomcat are in `/camunda/webapps/`. 
+EximeeBPMS is installed inside the `/eximeebpms` directory. Which
+means the Apache Tomcat configuration files are inside the `/eximeebpms/conf/` 
+directory and the deployments on Apache Tomcat are in `/eximeebpms/webapps/`. 
 The directory structure depends on the application server.
 
 ### Debug
@@ -296,7 +292,7 @@ To enable Prometheus JMX Exporter inside the container, you can set the
 environment variable `JMX_PROMETHEUS=true` on startup of the container. 
 This will allow you to get metrics in Prometheus format at `<host>:9404/metrics`. 
 For configuring exporter you need attach your configuration as a container volume 
-at `/camunda/javaagent/prometheus-jmx.yml`. This is only supported for `wildfly` 
+at `/eximeebpms/javaagent/prometheus-jmx.yml`. This is only supported for `wildfly` 
 and `tomcat` distributions.
 
 ### Change timezone
@@ -305,18 +301,15 @@ To change the timezone of the docker container, you can set the environment
 variable `TZ`.
 
 ```
-docker run -d --name camunda -p 8080:8080 \
+docker run -d --name eximeebpms -p 8080:8080 \
            -e TZ=Europe/Berlin \
-          camunda/camunda-bpm-platform:latest
+          EximeeBPMS/eximeebpms:latest
 ```
 
 ## Build
 
-You can build a Docker image for a given Camunda Platform version and distribution yourself.
-Make sure to adjust the [settings.xml](settings.xml) and remove the `camunda-nexus` mirror 
-(no matter if you are building a community or enterprise edition).
-If you want to build the enterprise edition (EE), 
-check out [the dedicated README section](#build-an-enterprise-version).
+You can build a Docker image for a given EximeeBPMS version and distribution yourself.
+Make sure to adjust the [settings.xml](settings.xml) and remove the `eximeebpms-nexus` mirror.
 
 ### Build a released version
 
@@ -324,13 +317,13 @@ To build a community image specify the `DISTRO` and `VERSION` build
 argument. Possible values for `DISTRO` are:
 * `tomcat`
 * `wildfly`
-* `run` (if the Camunda Platform version already supports it)
+* `run` 
 
-The `VERSION` argument is the Camunda Platform version you want to build, 
-i.e. `7.17.0`.
+The `VERSION` argument is the EximeeBPMS version you want to build, 
+i.e. `1.0.0`.
 
 ```
-docker build -t camunda-bpm-platform \
+docker build -t eximeebpms \
   --build-arg DISTRO=${DISTRO} \
   --build-arg VERSION=${VERSION} \
   .
@@ -342,36 +335,10 @@ Additionally, you can build `SNAPSHOT` versions for the upcoming releases by
 setting the `SNAPSHOT` build argument to `true`.
 
 ```
-docker build -t camunda-bpm-platform \
+docker build -t eximeebpms \
   --build-arg DISTRO=${DISTRO} \
   --build-arg VERSION=${VERSION} \
   --build-arg SNAPSHOT=true \
-  .
-```
-
-### Build an enterprise version
-
-If you are a Camunda enterprise customer, you can build
-an enterprise version of the Docker image. Set the `VERSION`
-build argument to the Camunda version without the ee suffix, i.e. `7.16.1`,
-set the `EE` build argument to `true` and
-the `USER` and `PASSWORD` build argument to your enterprise credentials.
-
-It is recommended that you `git checkout` the branch for the Camunda version
-you would like to build. For example, if you want to build a Docker image for
-Camunda version `7.16.3`, first execute `git checkout 7.16` on this repository. 
-
-**Note:** As the image uses a multi-stage Dockerfile the credentials are
-**not** part of the Docker image history of the final image. Be
-aware that you should not distribute this image outside your company.
-
-```
-docker build -t camunda-bpm-platform \
-  --build-arg EE=true \
-  --build-arg DISTRO=${DISTRO} \
-  --build-arg VERSION=${VERSION} \
-  --build-arg USER=${USER} \
-  --build-arg PASSWORD=${PASSWORD} \
   .
 ```
 
@@ -387,7 +354,7 @@ You can pass the following arguments to set proxy settings to Maven:
 Example for a released version of a community edition:
 
 ```
-docker build -t camunda-bpm-platform \
+docker build -t eximeebpms \
   --build-arg DISTRO=${DISTRO} \
   --build-arg VERSION=${VERSION} \
   --build-arg MAVEN_PROXY_HOST=${PROXY_HOST} \
@@ -397,10 +364,10 @@ docker build -t camunda-bpm-platform \
   .
 ```
 ### Override MySQL and PostgreSQL driver versions. 
-By default, the driver versions are fetched from https://github.com/camunda/camunda-bpm-platform/blob/master/database/pom.xml. That can be overriden by passing `MYSQL_VERSION` and `POSTGRESQL_VERSION` build args
+By default, the driver versions are fetched from https://github.com/EximeeBPMS/eximeebpms/blob/master/database/pom.xml. That can be overriden by passing `MYSQL_VERSION` and `POSTGRESQL_VERSION` build args
 
 ```
-docker build -t camunda-bpm-platform \
+docker build -t eximeebpms \
   --build-arg DISTRO=${DISTRO} \
   --build-arg VERSION=${VERSION} \
   --build-arg POSTGRESQL_VERSION=${POSTGRESQL_VERSION} \
@@ -417,9 +384,9 @@ container.  For example, if you want to change the `bpm-platform.xml` on
 Apache Tomcat:
 
 ```
-docker run -d --name camunda -p 8080:8080 \
-           -v $PWD/bpm-platform.xml:/camunda/conf/bpm-platform.xml \
-           camunda/camunda-bpm-platform:latest
+docker run -d --name eximeebpms -p 8080:8080 \
+           -v $PWD/bpm-platform.xml:/eximeebpms/conf/bpm-platform.xml \
+           EximeeBPMS/eximeebpms:latest
 ```
 
 ### Add own process application
@@ -429,9 +396,9 @@ use Docker volumes. For example, if you want to deploy the [twitter demo][]
 on Apache Tomcat:
 
 ```
-docker run -d --name camunda -p 8080:8080 \
-           -v /PATH/TO/DEMO/twitter.war:/camunda/webapps/twitter.war \
-           camunda/camunda-bpm-platform:latest
+docker run -d --name eximeebpms -p 8080:8080 \
+           -v /PATH/TO/DEMO/twitter.war:/eximeebpms/webapps/twitter.war \
+           EximeeBPMS/eximeebpms:latest
 ```
 
 This also allows you to modify the app outside the container, and it will
@@ -444,12 +411,12 @@ To remove all web apps and examples from the distro and only deploy your
 own applications or your own configured cockpit also use Docker volumes. You
 only have to overlay the deployment folder of the application server with
 a directory on your local machine. So in Apache Tomcat, you would mount a 
-directory to `/camunda/webapps/`:
+directory to `/eximeebpms/webapps/`:
 
 ```
-docker run -d --name camunda -p 8080:8080 \
-           -v $PWD/webapps/:/camunda/webapps/ \
-           camunda/camunda-bpm-platform:latest
+docker run -d --name eximeebpms -p 8080:8080 \
+           -v $PWD/webapps/:/eximeebpms/webapps/ \
+           EximeeBPMS/eximeebpms:latest
 ```
 
 
@@ -458,29 +425,18 @@ docker run -d --name camunda -p 8080:8080 \
 As we release these docker images on the official [docker registry][] it is
 easy to create your own image. This way you can deploy your applications
 with docker or provided an own demo image. Just specify in the `FROM`
-clause which Camunda image you want to use as a base image:
+clause which EximeeBPMS image you want to use as a base image:
 
 ```
-FROM camunda/camunda-bpm-platform:tomcat-latest
+FROM EximeeBPMS/eximeebpms:tomcat-latest
 
-ADD my.war /camunda/webapps/my.war
+ADD my.war /eximeebpms/webapps/my.war
 ```
-
-## Branching model
-
-Branches and their roles in this repository:
-
-- `next` (default branch) is the branch where new features and bugfixes needed 
-  to support the current `master` of [camunda-bpm-platform repo](https://github.com/camunda/camunda-bpm-platform) go.
-- `7.x` branches get created from `next` when a Camunda Platform minor version
-  is released. They only receive backports of bugfixes when absolutely necessary.
-
 
 ## License
 
 Apache License, Version 2.0
 
 
-[twitter demo]: https://github.com/camunda-consulting/code/tree/master/one-time-examples/twitter
-[docker registry]: https://hub.docker.com/r/camunda/camunda-bpm-platform/
-[docker hub tags]: https://hub.docker.com/r/camunda/camunda-bpm-platform/tags/
+[//]: # ([docker registry]: https://hub.docker.com/r/camunda/camunda-bpm-platform/)
+[//]: # ([docker hub tags]: https://hub.docker.com/r/camunda/camunda-bpm-platform/tags/)
