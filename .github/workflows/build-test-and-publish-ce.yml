@@ -41,6 +41,7 @@ jobs:
           EE: false
           SNAPSHOT: false
           PLATFORM: ${{ matrix.PLATFORM }}
+          VERSION: ${{ github.event.inputs.VERSION}}
       - name: Test
         run: ./test.sh
         working-directory: test
@@ -48,6 +49,7 @@ jobs:
           DISTRO: ${{ matrix.DISTRO }}
           EE: false
           PLATFORM: ${{ matrix.PLATFORM }}
+          VERSION: ${{ github.event.inputs.VERSION}}
   publish:
     runs-on: self-hosted
     needs: build-and-test
@@ -87,3 +89,4 @@ jobs:
           PLATFORMS: linux/arm64,linux/amd64
           GHCR_PASSWORD: ${{ secrets[env.GITHUB_PAT_USER] }}
           GHCR_USERNAME:  ${{ github.actor }}
+          VERSION: ${{ github.event.inputs.VERSION}}
