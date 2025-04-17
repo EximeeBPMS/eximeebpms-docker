@@ -1,21 +1,22 @@
 name: Build, test, and publish CE
-on: [pull_request, push, workflow_dispatch]
+on:
+  workflow_dispatch:
+    inputs:
+      VERSION:
+        description: 'Version to publish'
+        required: true
 jobs:
   build-and-test:
     runs-on: self-hosted
     strategy:
       fail-fast: false
+
       matrix:
-        DISTRO: [tomcat, wildfly, run]
-        PLATFORM: [amd64, arm64]
+        DISTRO: [run]
+        PLATFORM: [amd64]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-        if: ${{ matrix.PLATFORM != 'amd64' }}
-        with:
-            platforms: ${{ matrix.PLATFORM }}
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Expose GitHub Runtime
@@ -32,31 +33,34 @@ jobs:
         run: ./pipeline.sh
         env:
           DISTRO: ${{ matrix.DISTRO }}
-          EE: false
+          SNAPSHOT: false
           PLATFORM: ${{ matrix.PLATFORM }}
-          NEXUS_PASS: ${{ secrets.NEXUS_PASS }}
-          NEXUS_USER: ${{ secrets.NEXUS_USER }}
+          VERSION: ${{ github.event.inputs.VERSION}}
       - name: Test
         run: ./test.sh
         working-directory: test
         env:
           DISTRO: ${{ matrix.DISTRO }}
-          EE: false
           PLATFORM: ${{ matrix.PLATFORM }}
+          VERSION: ${{ github.event.inputs.VERSION}}
   publish:
     runs-on: self-hosted
     needs: build-and-test
-    if: ${{ github.ref == 'refs/heads/next' || startsWith(github.ref, 'refs/heads/7.') }}
     strategy:
       matrix:
-        DISTRO: [tomcat, wildfly, run]
+        DISTRO: [run]
     steps:
+      - name: Determine user and set secret
+        run: |
+          echo "GITHUB_PAT_USER=SECRET_PAT_${{ github.actor }}" >> $GITHUB_ENV
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets[env.GITHUB_PAT_USER] }}
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         with:
-          platforms: arm64,amd64
+          platforms: amd64
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Expose GitHub Runtime
@@ -73,9 +77,8 @@ jobs:
         run: ./release.sh
         env:
           DISTRO: ${{ matrix.DISTRO }}
-          EE: false
-          PLATFORMS: linux/arm64,linux/amd64
-          DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
-          DOCKER_HUB_USERNAME:  ${{ secrets.DOCKER_HUB_USERNAME }}
-          NEXUS_PASS: ${{ secrets.NEXUS_PASS }}
-          NEXUS_USER: ${{ secrets.NEXUS_USER }}
+          SNAPSHOT: false
+          PLATFORMS: linux/amd64
+          GHCR_PASSWORD: ${{ secrets[env.GITHUB_PAT_USER] }}
+          GHCR_USERNAME:  ${{ github.actor }}
+          VERSION: ${{ github.event.inputs.VERSION}}

@@ -1,12 +1,8 @@
 FROM alpine:3.18 AS builder
 
-ARG VERSION=0.9.0
-ARG DISTRO=tomcat
-ARG SNAPSHOT=true
-
-ARG EE=false
-ARG USER
-ARG PASSWORD
+ARG VERSION
+ARG DISTRO
+ARG SNAPSHOT
 
 ARG MAVEN_PROXY_HOST
 ARG MAVEN_PROXY_PORT
@@ -26,7 +22,7 @@ RUN apk add --no-cache \
         wget \
         xmlstarlet
 
-COPY settings.xml download.sh eximeebpms-run.sh eximeebpms-tomcat.sh eximeebpms-wildfly.sh  /tmp/
+COPY settings.xml download.sh eximeebpms-run.sh /tmp/
 
 RUN /tmp/download.sh
 COPY eximeebpms-lib.sh /eximeebpms/
@@ -36,7 +32,7 @@ COPY eximeebpms-lib.sh /eximeebpms/
 
 FROM alpine:3.18
 
-ARG VERSION=0.9.0
+ARG VERSION
 
 ENV DB_DRIVER=
 ENV DB_URL=

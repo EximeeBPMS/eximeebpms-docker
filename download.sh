@@ -1,28 +1,15 @@
 #!/bin/sh -ex
 
-# Determine GitHub Packages URL parameters
-if [ "${EE}" = "true" ]; then
-    echo "Downloading EximeeBPMS ${VERSION} Enterprise Edition for ${DISTRO}"
-    REPO="private"
-    GITHUB_GROUP="private"
-    ARTIFACT="eximeebpms-bpm-ee-${DISTRO}"
-    if [ "${DISTRO}" = "run" ]; then
-      ARTIFACT="eximeebpms-bpm-run-ee"
-    fi
-    ARTIFACT_VERSION="${VERSION}-ee"
-else
-    echo "Downloading EximeeBPMS ${VERSION} Community Edition for ${DISTRO}"
-    REPO="eximeebpms-bpm"
-    GITHUB_GROUP="public"
-    ARTIFACT="eximeebpms-bpm-${DISTRO}"
-    ARTIFACT_VERSION="${VERSION}"
-fi
+
+echo "Downloading EximeeBPMS ${VERSION} Community Edition for ${DISTRO}"
+REPO="eximeebpms-bpm"
+GITHUB_GROUP="public"
+ARTIFACT="eximeebpms-bpm-${DISTRO}"
+ARTIFACT_VERSION="${VERSION}"
+
 
 # Determine if SNAPSHOT repo and version should be used
 if [ ${SNAPSHOT} = "true" ]; then
-    if [ "${EE}" = "false" ]; then
-        REPO="${REPO}-snapshots"
-    fi
     ARTIFACT_VERSION="${VERSION}-SNAPSHOT"
 fi
 
@@ -61,7 +48,6 @@ fi
 # GitHub Packages URL with repository
 mvn dependency:get -B --global-settings /tmp/settings.xml \
     $PROXY \
-    -DremoteRepositories="github-packages::::https://maven.pkg.github.com/EximeeBPMS/eximeebpms" \
     -DgroupId="${ARTIFACT_GROUP}" -DartifactId="${ARTIFACT}" \
     -Dversion="${ARTIFACT_VERSION}" -Dpackaging="tar.gz" -Dtransitive=false
 
@@ -78,7 +64,6 @@ cp /tmp/eximeebpms-${GROUP}.sh /eximeebpms/eximeebpms.sh
 # download and register database drivers from GitHub Packages
 mvn dependency:get -B --global-settings /tmp/settings.xml \
     $PROXY \
-    -DremoteRepositories="github-packages::::https://maven.pkg.github.com/EximeeBPMS/eximeebpms" \
     -DgroupId="org.eximeebpms.bpm" -DartifactId="eximeebpms-database-settings" \
     -Dversion="${ARTIFACT_VERSION}" -Dpackaging="pom" -Dtransitive=false
 
