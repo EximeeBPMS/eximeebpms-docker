@@ -33,7 +33,6 @@ jobs:
         run: ./pipeline.sh
         env:
           DISTRO: ${{ matrix.DISTRO }}
-          EE: false
           SNAPSHOT: false
           PLATFORM: ${{ matrix.PLATFORM }}
           VERSION: ${{ github.event.inputs.VERSION}}
@@ -42,7 +41,6 @@ jobs:
         working-directory: test
         env:
           DISTRO: ${{ matrix.DISTRO }}
-          EE: false
           PLATFORM: ${{ matrix.PLATFORM }}
           VERSION: ${{ github.event.inputs.VERSION}}
   publish:
@@ -79,7 +77,6 @@ jobs:
         run: ./release.sh
         env:
           DISTRO: ${{ matrix.DISTRO }}
-          EE: false
           SNAPSHOT: false
           PLATFORMS: linux/amd64
           GHCR_PASSWORD: ${{ secrets[env.GITHUB_PAT_USER] }}

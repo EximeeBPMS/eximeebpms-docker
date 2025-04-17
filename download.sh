@@ -1,28 +1,15 @@
 #!/bin/sh -ex
 
-# Determine GitHub Packages URL parameters
-if [ "${EE}" = "true" ]; then
-    echo "Downloading EximeeBPMS ${VERSION} Enterprise Edition for ${DISTRO}"
-    REPO="private"
-    GITHUB_GROUP="private"
-    ARTIFACT="eximeebpms-bpm-ee-${DISTRO}"
-    if [ "${DISTRO}" = "run" ]; then
-      ARTIFACT="eximeebpms-bpm-run-ee"
-    fi
-    ARTIFACT_VERSION="${VERSION}-ee"
-else
-    echo "Downloading EximeeBPMS ${VERSION} Community Edition for ${DISTRO}"
-    REPO="eximeebpms-bpm"
-    GITHUB_GROUP="public"
-    ARTIFACT="eximeebpms-bpm-${DISTRO}"
-    ARTIFACT_VERSION="${VERSION}"
-fi
+
+echo "Downloading EximeeBPMS ${VERSION} Community Edition for ${DISTRO}"
+REPO="eximeebpms-bpm"
+GITHUB_GROUP="public"
+ARTIFACT="eximeebpms-bpm-${DISTRO}"
+ARTIFACT_VERSION="${VERSION}"
+
 
 # Determine if SNAPSHOT repo and version should be used
 if [ ${SNAPSHOT} = "true" ]; then
-    if [ "${EE}" = "false" ]; then
-        REPO="${REPO}-snapshots"
-    fi
     ARTIFACT_VERSION="${VERSION}-SNAPSHOT"
 fi
 
