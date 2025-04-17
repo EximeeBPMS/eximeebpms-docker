@@ -1,13 +1,16 @@
 name: Build, test, and publish CE
-on: [workflow_dispatch]
+on:
+  workflow_dispatch:
+    inputs:
+      VERSION:
+        description: 'Version to publish'
+        required: true
 jobs:
   build-and-test:
     runs-on: self-hosted
     strategy:
       fail-fast: false
-      VERSION:
-        description: 'Version to publish'
-        required: true
+
       matrix:
         DISTRO: [tomcat, wildfly, run]
         PLATFORM: [amd64, arm64]
