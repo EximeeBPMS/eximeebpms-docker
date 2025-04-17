@@ -24,7 +24,7 @@ RUN apk add --no-cache \
         wget \
         xmlstarlet
 
-COPY settings.xml download.sh eximeebpms-run.sh eximeebpms-tomcat.sh eximeebpms-wildfly.sh  /tmp/
+COPY settings.xml download.sh eximeebpms-run.sh /tmp/
 
 RUN /tmp/download.sh
 COPY eximeebpms-lib.sh /eximeebpms/

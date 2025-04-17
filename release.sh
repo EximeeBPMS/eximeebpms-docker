@@ -37,34 +37,7 @@ fi
 echo "${GHCR_PASSWORD}" | docker login ghcr.io -u "${GHCR_USERNAME}" --password-stdin
 
 tags=()
-
-if [ "${SNAPSHOT}" = "true" ]; then
-    tags+=("${DISTRO}-${VERSION}-SNAPSHOT")
-    tags+=("${DISTRO}-SNAPSHOT")
-
-    if [ "${DISTRO}" = "tomcat" ]; then
-        tags+=("${VERSION}-SNAPSHOT")
-        tags+=("SNAPSHOT")
-    fi
-else
-    tags+=("${DISTRO}-${VERSION}")
-    if [ "${DISTRO}" = "tomcat" ]; then
-        tags+=("${VERSION}")
-    fi
-fi
-
-# Latest Docker image is created and pushed just once when a new version is relased.
-# Latest tag refers to the latest minor release of EximeeBPMS.
-# https://github.com/EximeeBPMS/eximeebpms-docker/blob/next/README.md#supported-tagsreleases
-# The 1st condition matches only when the version branch is the same as the main branch.
-git fetch origin next
-if [ $(git rev-parse HEAD) = $(git rev-parse FETCH_HEAD) ] && [ "${SNAPSHOT}" = "false" ]; then
-    # tagging image as latest
-    tags+=("${DISTRO}-latest")
-    tags+=("${DISTRO}")
-    if [ "${DISTRO}" = "tomcat" ]; then
-        tags+=("latest")
-    fi
-fi
+tags+=("${VERSION}")
+tags+=("latest")
 
 build_and_push "${tags[@]}"

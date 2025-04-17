@@ -18,8 +18,6 @@ in production, consider reading our [security instructions](https://docs.eximeeb
 You can find more detailed documentation on the pre-packaged (community) 
 distributions that Camunda provides at the following links:
 
-* Apache Tomcat - [EximeeBPMS Tomcat integration documentation](https://docs.eximeebpms.org/manual/latest/user-guide/runtime-container-integration/tomcat/)
-* Wildfly - [EximeeBPMS Wildfly Subsystem documentation](https://docs.eximeebpms.org/manual/latest/user-guide/runtime-container-integration/jboss/)
 * Camunda Platform Run - [documentation](https://docs.eximeebpms.org/manual/latest/user-guide/camunda-bpm-run/)
 
 ## Get started
@@ -27,8 +25,8 @@ distributions that Camunda provides at the following links:
 To start a Docker container of the latest EximeeBPMS release:
 
 ```
-docker pull EximeeBPMS/eximeebpms:latest
-docker run -d --name eximeebpms -p 8080:8080 EximeeBPMS/eximeebpms:latest
+docker pull ghcr.io/eximeebpms/eximeebpms-bpm-platform:latest
+docker run -d --name eximeebpms -p 8080:8080 ghcr.io/eximeebpms/eximeebpms-bpm-platform:latest
 ```
 
 ### Tasklist, Cockpit, Admin web apps
@@ -62,13 +60,9 @@ application server distributions of Camunda Platform.
   Platform, which is not released yet.
 - `${VERSION}`, `${DISTRO}-${VERSION}`: A specific version of Camunda Platform.
 
-`${DISTRO}` can be one of the following: 
-* `tomcat`
-* `wildfly`
+`${DISTRO}` can be one of the following:
 * `run`
 
-If no `${DISTRO}` is specified, the `tomcat` distribution is used. For all 
-available tags see the [docker hub tags][].
 
 ## EximeeBPMS configuration
 
@@ -120,17 +114,13 @@ used to enable debug output, it doesn't start a debug socket.
 WebApps, the REST API or Swagger UI. By default, all three are enabled.
 
 Passing startup parameters to enable them selectively can be done by passing any 
-combination of `--webapps`, `--rest` or `--swaggerui` like in the following 
+combination of `--webapps`, `--rest` like in the following 
 example:
 
 Enable only web apps:
 
 ```bash
-docker run EximeeBPMS/eximeebpms:run ./eximeebpms.sh --webapps
-``` 
-Enable only REST API and Swagger UI:
-```bash
-docker run EximeeBPMS/eximeebpms:run ./eximeebpms.sh --rest --swaggerui
+docker run ghcr.io/eximeebpms/eximeebpms-bpm-platform:latest ./eximeebpms.sh --webapps
 ```
 
 Additionally, a `--production` parameter is supported to switch the 
@@ -204,7 +194,7 @@ docker run -d --name eximeebpms -p 8080:8080 --link postgresql:db \
            -e DB_USERNAME=eximeebpms \
            -e DB_PASSWORD=eximeebpms \
            -e WAIT_FOR=db:5432 \
-           EximeeBPMS/eximeebpms:latest
+           ghcr.io/eximeebpms/eximeebpms-bpm-platform:latest
 ```
 
 Another option is to save the database config to an environment file, i.e.
@@ -236,7 +226,7 @@ value:
 
 ```
 docker run -d --name eximeebpms -p 8080:8080 -e SKIP_DB_CONFIG=true \
-           EximeeBPMS/eximeebpms:latest
+           ghcr.io/eximeebpms/eximeebpms-bpm-platform:latest
 ```
 
 ### Waiting for database
@@ -269,7 +259,7 @@ docker run -d --name eximeebpms -p 8080:8080 --link postgresql:db \
            -e DB_PASSWORD=eximeebpms \
            -e WAIT_FOR=db:5432 \
            -e WAIT_FOR_TIMEOUT=60 \
-           EximeeBPMS/eximeebpms:latest
+           ghcr.io/eximeebpms/eximeebpms-bpm-platform:latest
 ```
 
 ### Volumes
@@ -303,7 +293,7 @@ variable `TZ`.
 ```
 docker run -d --name eximeebpms -p 8080:8080 \
            -e TZ=Europe/Berlin \
-          EximeeBPMS/eximeebpms:latest
+          ghcr.io/eximeebpms/eximeebpms-bpm-platform:latest
 ```
 
 ## Build
@@ -315,8 +305,6 @@ Make sure to adjust the [settings.xml](settings.xml) and remove the `eximeebpms-
 
 To build a community image specify the `DISTRO` and `VERSION` build
 argument. Possible values for `DISTRO` are:
-* `tomcat`
-* `wildfly`
 * `run` 
 
 The `VERSION` argument is the EximeeBPMS version you want to build, 
@@ -386,7 +374,7 @@ Apache Tomcat:
 ```
 docker run -d --name eximeebpms -p 8080:8080 \
            -v $PWD/bpm-platform.xml:/eximeebpms/conf/bpm-platform.xml \
-           EximeeBPMS/eximeebpms:latest
+           ghcr.io/eximeebpms/eximeebpms-bpm-platform:latest
 ```
 
 ### Add own process application
@@ -398,7 +386,7 @@ on Apache Tomcat:
 ```
 docker run -d --name eximeebpms -p 8080:8080 \
            -v /PATH/TO/DEMO/twitter.war:/eximeebpms/webapps/twitter.war \
-           EximeeBPMS/eximeebpms:latest
+           ghcr.io/eximeebpms/eximeebpms-bpm-platform:latest
 ```
 
 This also allows you to modify the app outside the container, and it will
@@ -416,7 +404,7 @@ directory to `/eximeebpms/webapps/`:
 ```
 docker run -d --name eximeebpms -p 8080:8080 \
            -v $PWD/webapps/:/eximeebpms/webapps/ \
-           EximeeBPMS/eximeebpms:latest
+           ghcr.io/eximeebpms/eximeebpms-bpm-platform:latest
 ```
 
 
@@ -428,7 +416,7 @@ with docker or provided an own demo image. Just specify in the `FROM`
 clause which EximeeBPMS image you want to use as a base image:
 
 ```
-FROM EximeeBPMS/eximeebpms:tomcat-latest
+FROM ghcr.io/eximeebpms/eximeebpms-bpm-platform:latest
 
 ADD my.war /eximeebpms/webapps/my.war
 ```
