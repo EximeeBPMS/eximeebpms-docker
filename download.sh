@@ -61,7 +61,6 @@ fi
 # GitHub Packages URL with repository
 mvn dependency:get -B --global-settings /tmp/settings.xml \
     $PROXY \
-    -DremoteRepositories="github-packages::::https://maven.pkg.github.com/EximeeBPMS/eximeebpms" \
     -DgroupId="${ARTIFACT_GROUP}" -DartifactId="${ARTIFACT}" \
     -Dversion="${ARTIFACT_VERSION}" -Dpackaging="tar.gz" -Dtransitive=false
 
@@ -78,7 +77,6 @@ cp /tmp/eximeebpms-${GROUP}.sh /eximeebpms/eximeebpms.sh
 # download and register database drivers from GitHub Packages
 mvn dependency:get -B --global-settings /tmp/settings.xml \
     $PROXY \
-    -DremoteRepositories="github-packages::::https://maven.pkg.github.com/EximeeBPMS/eximeebpms" \
     -DgroupId="org.eximeebpms.bpm" -DartifactId="eximeebpms-database-settings" \
     -Dversion="${ARTIFACT_VERSION}" -Dpackaging="pom" -Dtransitive=false
 

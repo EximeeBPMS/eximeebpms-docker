@@ -1,10 +1,13 @@
 name: Build, test, and publish CE
-on: [pull_request, push, workflow_dispatch]
+on: [workflow_dispatch]
 jobs:
   build-and-test:
     runs-on: self-hosted
     strategy:
       fail-fast: false
+      VERSION:
+        description: 'Version to publish'
+        required: true
       matrix:
         DISTRO: [tomcat, wildfly, run]
         PLATFORM: [amd64, arm64]
@@ -33,9 +36,8 @@ jobs:
         env:
           DISTRO: ${{ matrix.DISTRO }}
           EE: false
+          SNAPSHOT: false
           PLATFORM: ${{ matrix.PLATFORM }}
-          NEXUS_PASS: ${{ secrets.NEXUS_PASS }}
-          NEXUS_USER: ${{ secrets.NEXUS_USER }}
       - name: Test
         run: ./test.sh
         working-directory: test
@@ -46,13 +48,17 @@ jobs:
   publish:
     runs-on: self-hosted
     needs: build-and-test
-    if: ${{ github.ref == 'refs/heads/next' || startsWith(github.ref, 'refs/heads/7.') }}
     strategy:
       matrix:
         DISTRO: [tomcat, wildfly, run]
     steps:
+      - name: Determine user and set secret
+        run: |
+          echo "GITHUB_PAT_USER=SECRET_PAT_${{ github.actor }}" >> $GITHUB_ENV
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets[env.GITHUB_PAT_USER] }}
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         with:
@@ -74,8 +80,7 @@ jobs:
         env:
           DISTRO: ${{ matrix.DISTRO }}
           EE: false
+          SNAPSHOT: false
           PLATFORMS: linux/arm64,linux/amd64
-          DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
-          DOCKER_HUB_USERNAME:  ${{ secrets.DOCKER_HUB_USERNAME }}
-          NEXUS_PASS: ${{ secrets.NEXUS_PASS }}
-          NEXUS_USER: ${{ secrets.NEXUS_USER }}
+          GHCR_PASSWORD: ${{ secrets[env.GITHUB_PAT_USER] }}
+          GHCR_USERNAME:  ${{ github.actor }}

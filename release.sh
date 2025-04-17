@@ -5,22 +5,18 @@ VERSION=${VERSION:-$(grep VERSION= Dockerfile | head -n1 | cut -d = -f 2)}
 DISTRO=${DISTRO:-$(grep DISTRO= Dockerfile | cut -d = -f 2)}
 SNAPSHOT=${SNAPSHOT:-$(grep SNAPSHOT= Dockerfile | cut -d = -f 2)}
 PLATFORMS=${PLATFORMS:-linux/amd64}
-NEXUS_USER=${NEXUS_USER:-}
-NEXUS_PASS=${NEXUS_PASS:-}
 
-IMAGE=eximeebpms/eximeebpms-bpm-platform
+IMAGE='ghcr.io/eximeebpms/eximeebpms-bpm-platform'
 
 function build_and_push {
     local tags=("$@")
     printf -v tag_arguments -- "--tag $IMAGE:%s " "${tags[@]}"
-    docker buildx build .                         \
-        $tag_arguments                            \
-        --build-arg DISTRO=${DISTRO}              \
-        --build-arg EE=${EE}                      \
-        --build-arg USER=${NEXUS_USER}            \
-        --build-arg PASSWORD=${NEXUS_PASS}        \
-        --cache-from type=gha,scope="$GITHUB_REF_NAME-$DISTRO-image" \
-        --platform $PLATFORMS \
+    docker buildx build .               \
+        $tag_arguments                  \
+        --build-arg DISTRO=${DISTRO}    \
+        --build-arg EE=${EE}            \
+        --build-arg VERSION=${VERSION}  \
+        --platform $PLATFORMS           \
         --push
 
       echo "Tags released:" >> $GITHUB_STEP_SUMMARY
@@ -38,7 +34,7 @@ if [ $(docker manifest inspect $IMAGE:${DISTRO}-${VERSION} > /dev/null ; echo $?
     exit 0
 fi
 
-docker login -u "${DOCKER_HUB_USERNAME}" -p "${DOCKER_HUB_PASSWORD}"
+echo "${GHCR_PASSWORD}" | docker login ghcr.io -u "${GHCR_USERNAME}" --password-stdin
 
 tags=()
 
