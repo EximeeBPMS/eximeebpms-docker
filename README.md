@@ -10,15 +10,15 @@ release, which includes alpha releases.
 
 The EximeeBPMS Docker images are wrappers for the pre-packaged EximeeBPMS
 distributions. The pre-packaged distributions are intended for users who want a 
-getting started experience. In case you want to use the Camunda Docker images 
+getting started experience. In case you want to use the EximeeBPMS Docker images 
 in production, consider reading our [security instructions](https://docs.eximeebpms.org/manual/latest/user-guide/security/).
 
 ## Distributions
 
 You can find more detailed documentation on the pre-packaged (community) 
-distributions that Camunda provides at the following links:
+distributions that EximeeBPMS provides at the following links:
 
-* Camunda Platform Run - [documentation](https://docs.eximeebpms.org/manual/latest/user-guide/camunda-bpm-run/)
+* EximeeBPMS Run - [documentation](https://docs.eximeebpms.org/manual/latest/user-guide/eximeebpms-bpm-run/)
 
 ## Get started
 
@@ -46,34 +46,34 @@ The EximeeBPMS Rest-API is accessible through: http://localhost:8080/engine-rest
 See the [REST API](https://docs.eximeebpms.org/manual/latest/reference/rest/)
 documentation for more details on how to use it.
 
-**Note**: The REST API does not require authentication by default. Follow the instructions from the [documentation](https://docs.camunda.org/manual/latest/reference/rest/overview/authentication/)
+**Note**: The REST API does not require authentication by default. Follow the instructions from the [documentation](https://docs.eximeebpms.org/manual/latest/reference/rest/overview/authentication/)
 to enable authentication for the REST API.
 
 ## Supported tags/releases
 
 The following tag schema is used. The user has the choice between different
-application server distributions of Camunda Platform.
+application server distributions of EximeeBPMS.
 
-- `latest`, `${DISTRO}-latest`: Always the latest minor release of Camunda Platform.
+- `latest`, `${DISTRO}-latest`: Always the latest minor release of EximeeBPMS.
 - `SNAPSHOT`, `${VERSION}-SNAPSHOT`, `${DISTRO}-SNAPSHOT`,
-  `${DISTRO}-${VERSION}-SNAPSHOT`: The latest SNAPSHOT version of Camunda 
-  Platform, which is not released yet.
-- `${VERSION}`, `${DISTRO}-${VERSION}`: A specific version of Camunda Platform.
+  `${DISTRO}-${VERSION}-SNAPSHOT`: The latest SNAPSHOT version of EximeeBPMS, which is not released yet.
+- `${VERSION}`, `${DISTRO}-${VERSION}`: A specific version of EximeeBPMS.
 
 `${DISTRO}` can be one of the following:
 * `run`
-
+* `tomcat` (deprecated)
+* `wildfly` (deprecated)
 
 ## EximeeBPMS configuration
 
-You can find the complete Camunda documentation at https://docs.eximeebpms.org/.
+You can find the complete EximeeBPMS documentation at https://docs.eximeebpms.org/.
 
-If you prefer to start your Camunda Docker image right away, you will find the
+If you prefer to start your EximeeBPMS Docker image right away, you will find the
 following links useful:
 
 * [EximeeBPMS configuration file properties](https://docs.eximeebpms.org/manual/latest/reference/deployment-descriptors/descriptors/bpm-platform-xml/)
 * [Process Engine Plugins guide](https://docs.eximeebpms.org/manual/latest/user-guide/process-engine/process-engine-plugins/)
-* [Camunda Logging](https://docs.eximeebpms.org/manual/latest/user-guide/logging/)
+* [EximeeBPMS Logging](https://docs.eximeebpms.org/manual/latest/user-guide/logging/)
 
 ## EximeeBPMS Docker image configuration
 
@@ -212,7 +212,7 @@ Use this file to start the container:
 
 ```
 docker run -d --name eximeebpms -p 8080:8080 --link postgresql:db \
-           --env-file db-env.txt EximeeBPMS/eximeebpms:latest
+           --env-file db-env.txt ghcr.io/eximeebpms/eximeebpms-bpm-platform:latest
 ```
 
 The docker image already contains drivers for `h2`, `mysql`, and `postgresql`.
@@ -426,5 +426,5 @@ ADD my.war /eximeebpms/webapps/my.war
 Apache License, Version 2.0
 
 
-[//]: # ([docker registry]: https://hub.docker.com/r/camunda/camunda-bpm-platform/)
-[//]: # ([docker hub tags]: https://hub.docker.com/r/camunda/camunda-bpm-platform/tags/)
+[//]: # ([docker registry]: https://github.com/EximeeBPMS/eximeebpms-docker/pkgs/container/eximeebpms-bpm-platform)
+[//]: # ([docker hub tags]: https://github.com/EximeeBPMS/eximeebpms-docker/pkgs/container/eximeebpms-bpm-platform/tags)
