@@ -13,15 +13,10 @@ jobs:
 
       matrix:
         DISTRO: [tomcat, wildfly, run]
-        PLATFORM: [amd64, arm64]
+        PLATFORM: [amd64]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-        if: ${{ matrix.PLATFORM != 'amd64' }}
-        with:
-            platforms: ${{ matrix.PLATFORM }}
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Expose GitHub Runtime
@@ -67,7 +62,7 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         with:
-          platforms: arm64,amd64
+          platforms: amd64
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Expose GitHub Runtime
@@ -86,7 +81,7 @@ jobs:
           DISTRO: ${{ matrix.DISTRO }}
           EE: false
           SNAPSHOT: false
-          PLATFORMS: linux/arm64,linux/amd64
+          PLATFORMS: linux/amd64
           GHCR_PASSWORD: ${{ secrets[env.GITHUB_PAT_USER] }}
           GHCR_USERNAME:  ${{ github.actor }}
           VERSION: ${{ github.event.inputs.VERSION}}
