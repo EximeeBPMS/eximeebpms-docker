@@ -10,15 +10,15 @@ release, which includes alpha releases.
 
 The EximeeBPMS Docker images are wrappers for the pre-packaged EximeeBPMS
 distributions. The pre-packaged distributions are intended for users who want a 
-getting started experience. In case you want to use the Camunda Docker images 
+getting started experience. In case you want to use the EximeeBPMS Docker images 
 in production, consider reading our [security instructions](https://docs.eximeebpms.org/manual/latest/user-guide/security/).
 
 ## Distributions
 
 You can find more detailed documentation on the pre-packaged (community) 
-distributions that Camunda provides at the following links:
+distributions that EximeeBPMS provides at the following links:
 
-* Camunda Platform Run - [documentation](https://docs.eximeebpms.org/manual/latest/user-guide/camunda-bpm-run/)
+* EximeeBPMS Run - [documentation](https://docs.eximeebpms.org/manual/latest/user-guide/eximeebpms-bpm-run/)
 
 ## Get started
 
@@ -46,34 +46,27 @@ The EximeeBPMS Rest-API is accessible through: http://localhost:8080/engine-rest
 See the [REST API](https://docs.eximeebpms.org/manual/latest/reference/rest/)
 documentation for more details on how to use it.
 
-**Note**: The REST API does not require authentication by default. Follow the instructions from the [documentation](https://docs.camunda.org/manual/latest/reference/rest/overview/authentication/)
+**Note**: The REST API does not require authentication by default. Follow the instructions from the [documentation](https://docs.eximeebpms.org/manual/latest/reference/rest/overview/authentication/)
 to enable authentication for the REST API.
 
 ## Supported tags/releases
 
 The following tag schema is used. The user has the choice between different
-application server distributions of Camunda Platform.
+application server distributions of EximeeBPMS.
 
-- `latest`, `${DISTRO}-latest`: Always the latest minor release of Camunda Platform.
-- `SNAPSHOT`, `${VERSION}-SNAPSHOT`, `${DISTRO}-SNAPSHOT`,
-  `${DISTRO}-${VERSION}-SNAPSHOT`: The latest SNAPSHOT version of Camunda 
-  Platform, which is not released yet.
-- `${VERSION}`, `${DISTRO}-${VERSION}`: A specific version of Camunda Platform.
-
-`${DISTRO}` can be one of the following:
-* `run`
-
+- `latest`: Always the latest minor release of EximeeBPMS.
+- `${VERSION}`: A specific version of EximeeBPMS.
 
 ## EximeeBPMS configuration
 
-You can find the complete Camunda documentation at https://docs.eximeebpms.org/.
+You can find the complete EximeeBPMS documentation at https://docs.eximeebpms.org/.
 
-If you prefer to start your Camunda Docker image right away, you will find the
+If you prefer to start your EximeeBPMS Docker image right away, you will find the
 following links useful:
 
 * [EximeeBPMS configuration file properties](https://docs.eximeebpms.org/manual/latest/reference/deployment-descriptors/descriptors/bpm-platform-xml/)
 * [Process Engine Plugins guide](https://docs.eximeebpms.org/manual/latest/user-guide/process-engine/process-engine-plugins/)
-* [Camunda Logging](https://docs.eximeebpms.org/manual/latest/user-guide/logging/)
+* [EximeeBPMS Logging](https://docs.eximeebpms.org/manual/latest/user-guide/logging/)
 
 ## EximeeBPMS Docker image configuration
 
@@ -212,7 +205,7 @@ Use this file to start the container:
 
 ```
 docker run -d --name eximeebpms -p 8080:8080 --link postgresql:db \
-           --env-file db-env.txt EximeeBPMS/eximeebpms:latest
+           --env-file db-env.txt ghcr.io/eximeebpms/eximeebpms-bpm-platform:latest
 ```
 
 The docker image already contains drivers for `h2`, `mysql`, and `postgresql`.
@@ -261,29 +254,6 @@ docker run -d --name eximeebpms -p 8080:8080 --link postgresql:db \
            -e WAIT_FOR_TIMEOUT=60 \
            ghcr.io/eximeebpms/eximeebpms-bpm-platform:latest
 ```
-
-### Volumes
-
-EximeeBPMS is installed inside the `/eximeebpms` directory. Which
-means the Apache Tomcat configuration files are inside the `/eximeebpms/conf/` 
-directory and the deployments on Apache Tomcat are in `/eximeebpms/webapps/`. 
-The directory structure depends on the application server.
-
-### Debug
-
-To enable JPDA inside the container, you can set the environment variable
-`DEBUG=true` on startup of the container. This will allow you to connect to the
-container on port `8000` to debug your application.
-This is only supported for `wildfly` and `tomcat` distributions.
-
-### Prometheus JMX Exporter
-
-To enable Prometheus JMX Exporter inside the container, you can set the 
-environment variable `JMX_PROMETHEUS=true` on startup of the container. 
-This will allow you to get metrics in Prometheus format at `<host>:9404/metrics`. 
-For configuring exporter you need attach your configuration as a container volume 
-at `/eximeebpms/javaagent/prometheus-jmx.yml`. This is only supported for `wildfly` 
-and `tomcat` distributions.
 
 ### Change timezone
 
@@ -365,49 +335,6 @@ docker build -t eximeebpms \
 
 ## Use cases
 
-### Change configuration files
-
-You can use docker volumes to link your own configuration files inside the
-container.  For example, if you want to change the `bpm-platform.xml` on 
-Apache Tomcat:
-
-```
-docker run -d --name eximeebpms -p 8080:8080 \
-           -v $PWD/bpm-platform.xml:/eximeebpms/conf/bpm-platform.xml \
-           ghcr.io/eximeebpms/eximeebpms-bpm-platform:latest
-```
-
-### Add own process application
-
-If you want to add your own process application to the docker container, you can
-use Docker volumes. For example, if you want to deploy the [twitter demo][] 
-on Apache Tomcat:
-
-```
-docker run -d --name eximeebpms -p 8080:8080 \
-           -v /PATH/TO/DEMO/twitter.war:/eximeebpms/webapps/twitter.war \
-           ghcr.io/eximeebpms/eximeebpms-bpm-platform:latest
-```
-
-This also allows you to modify the app outside the container, and it will
-be redeployed inside the platform.
-
-
-### Clean distro without web apps and examples
-
-To remove all web apps and examples from the distro and only deploy your
-own applications or your own configured cockpit also use Docker volumes. You
-only have to overlay the deployment folder of the application server with
-a directory on your local machine. So in Apache Tomcat, you would mount a 
-directory to `/eximeebpms/webapps/`:
-
-```
-docker run -d --name eximeebpms -p 8080:8080 \
-           -v $PWD/webapps/:/eximeebpms/webapps/ \
-           ghcr.io/eximeebpms/eximeebpms-bpm-platform:latest
-```
-
-
 ## Extend Docker image
 
 As we release these docker images on the official [docker registry][] it is
@@ -417,8 +344,6 @@ clause which EximeeBPMS image you want to use as a base image:
 
 ```
 FROM ghcr.io/eximeebpms/eximeebpms-bpm-platform:latest
-
-ADD my.war /eximeebpms/webapps/my.war
 ```
 
 ## License
@@ -426,5 +351,5 @@ ADD my.war /eximeebpms/webapps/my.war
 Apache License, Version 2.0
 
 
-[//]: # ([docker registry]: https://hub.docker.com/r/camunda/camunda-bpm-platform/)
-[//]: # ([docker hub tags]: https://hub.docker.com/r/camunda/camunda-bpm-platform/tags/)
+[//]: # ([docker registry]: https://github.com/EximeeBPMS/eximeebpms-docker/pkgs/container/eximeebpms-bpm-platform)
+[//]: # ([docker tags]: https://github.com/EximeeBPMS/eximeebpms-docker/pkgs/container/eximeebpms-bpm-platform/tags)
