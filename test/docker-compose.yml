@@ -48,33 +48,6 @@ services:
             - "8000:8000"
         restart: unless-stopped
 
-    eximeebpms-prometheus-jmx:
-        image: eximeebpms/eximeebpms-bpm-platform:${DISTRO}-${PLATFORM}
-        platform: linux/${PLATFORM}
-        environment:
-            - JMX_PROMETHEUS=true
-        ports:
-            - "8080:8080"
-            - "9404:9404"
-        restart: unless-stopped
-
-    eximeebpms-password-file:
-        image: eximeebpms/eximeebpms-bpm-platform:${DISTRO}-${PLATFORM}
-        platform: linux/${PLATFORM}
-        environment:
-            - DB_DRIVER=com.mysql.cj.jdbc.Driver
-            - DB_URL=jdbc:mysql://mysql:3306/process-engine?sendFractionalSeconds=false&sessionVariables=transaction_isolation='READ-COMMITTED'
-            - DB_USERNAME=eximeebpms
-            - DB_PASSWORD_FILE=/run/secrets/eximeebpms_db_password
-            - WAIT_FOR=mysql:3306
-        volumes:
-            - $PWD/db-password.txt:/run/secrets/eximeebpms_db_password
-        links:
-            - mysql
-        ports:
-            - "8080:8080"
-        restart: unless-stopped
-
     mysql:
         image: mysql:8.0
         environment:

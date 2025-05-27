@@ -113,12 +113,3 @@ EOF
         echo "" > /eximeebpms/bin/setenv.sh
         ;;
 esac
-
-# download Prometheus JMX Exporter
-mvn dependency:copy -B \
-    $PROXY \
-    -Dartifact="io.prometheus.jmx:jmx_prometheus_javaagent:${JMX_PROMETHEUS_VERSION}:jar" \
-    -DoutputDirectory=/tmp/
-
-mkdir -p /eximeebpms/javaagent
-cp /tmp/jmx_prometheus_javaagent-${JMX_PROMETHEUS_VERSION}.jar /eximeebpms/javaagent/jmx_prometheus_javaagent.jar
