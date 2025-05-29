@@ -8,12 +8,6 @@ on:
 jobs:
   build-and-test:
     runs-on: self-hosted
-    strategy:
-      fail-fast: false
-
-      matrix:
-        DISTRO: [run]
-        PLATFORM: [amd64]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -32,23 +26,20 @@ jobs:
       - name: Build
         run: ./pipeline.sh
         env:
-          DISTRO: ${{ matrix.DISTRO }}
+          DISTRO: run
           SNAPSHOT: false
-          PLATFORM: ${{ matrix.PLATFORM }}
-          VERSION: ${{ github.event.inputs.VERSION}}
+          PLATFORM: amd64
+          VERSION: ${{ github.event.inputs.VERSION }}
       - name: Test
         run: ./test.sh
         working-directory: test
         env:
-          DISTRO: ${{ matrix.DISTRO }}
-          PLATFORM: ${{ matrix.PLATFORM }}
-          VERSION: ${{ github.event.inputs.VERSION}}
+          DISTRO: run
+          PLATFORM: amd64
+          VERSION: ${{ github.event.inputs.VERSION }}
   publish:
     runs-on: self-hosted
     needs: build-and-test
-    strategy:
-      matrix:
-        DISTRO: [run]
     steps:
       - name: Determine user and set secret
         run: |
@@ -76,9 +67,9 @@ jobs:
       - name: Publish multi-platform images
         run: ./release.sh
         env:
-          DISTRO: ${{ matrix.DISTRO }}
+          DISTRO: run
           SNAPSHOT: false
           PLATFORMS: linux/amd64
           GHCR_PASSWORD: ${{ secrets[env.GITHUB_PAT_USER] }}
           GHCR_USERNAME:  ${{ github.actor }}
-          VERSION: ${{ github.event.inputs.VERSION}}
+          VERSION: ${{ github.event.inputs.VERSION }}
