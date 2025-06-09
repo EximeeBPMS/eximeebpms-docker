@@ -30,6 +30,7 @@ fi
 echo "${GHCR_PASSWORD}" | docker login ghcr.io -u "${GHCR_USERNAME}" --password-stdin
 
 tags=()
+tags+=("${DISTRO}-${VERSION}")
 tags+=("${VERSION}")
 tags+=("latest")
 
