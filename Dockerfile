@@ -73,3 +73,5 @@ ENTRYPOINT ["/sbin/tini", "--"]
 CMD ["./eximeebpms.sh"]
 
 COPY --chown=eximeebpms:eximeebpms --from=builder /eximeebpms .
+
+RUN chmod +x /eximeebpms/eximeebpms.sh
