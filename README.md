@@ -270,11 +270,17 @@ Make sure to adjust the [settings.xml](settings.xml) and remove the `eximeebpms-
 
 ### Build a released version
 
-The `VERSION` argument is the EximeeBPMS version you want to build, 
+To build an image specify the `DISTRO` and `VERSION` build
+argument. Possible values for `DISTRO` are:
+* `run`
+* `tomcat`
+
+The `VERSION` argument is the EximeeBPMS version you want to build,
 i.e. `1.0.0`.
 
 ```
 docker build -t eximeebpms \
+  --build-arg DISTRO=${DISTRO} \
   --build-arg VERSION=${VERSION} \
   .
 ```
@@ -286,6 +292,7 @@ setting the `SNAPSHOT` build argument to `true`.
 
 ```
 docker build -t eximeebpms \
+  --build-arg DISTRO=${DISTRO} \
   --build-arg VERSION=${VERSION} \
   --build-arg SNAPSHOT=true \
   .
@@ -304,6 +311,7 @@ Example for a released version of a community edition:
 
 ```
 docker build -t eximeebpms \
+  --build-arg DISTRO=${DISTRO} \
   --build-arg VERSION=${VERSION} \
   --build-arg MAVEN_PROXY_HOST=${PROXY_HOST} \
   --build-arg MAVEN_PROXY_PORT=${PROXY_PORT} \
@@ -316,6 +324,7 @@ By default, the driver versions are fetched from https://github.com/EximeeBPMS/e
 
 ```
 docker build -t eximeebpms \
+  --build-arg DISTRO=${DISTRO} \
   --build-arg VERSION=${VERSION} \
   --build-arg POSTGRESQL_VERSION=${POSTGRESQL_VERSION} \
   --build-arg MYSQL_VERSION=${MYSQL_VERSION} \

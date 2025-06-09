@@ -2,6 +2,7 @@ FROM alpine:3.18 AS builder
 
 ARG VERSION
 ARG SNAPSHOT
+ARG DISTRO
 
 ARG MAVEN_PROXY_HOST
 ARG MAVEN_PROXY_PORT
@@ -19,7 +20,7 @@ RUN apk add --no-cache \
         wget \
         xmlstarlet
 
-COPY settings.xml download.sh eximeebpms-run.sh /tmp/
+COPY settings.xml download.sh eximeebpms-run.sh eximeebpms-tomcat.sh /tmp/
 
 RUN /tmp/download.sh
 COPY eximeebpms-lib.sh /eximeebpms/

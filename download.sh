@@ -1,15 +1,17 @@
 #!/bin/sh -ex
 
-echo "Downloading EximeeBPMS ${VERSION} Community Edition for run"
+echo "Downloading EximeeBPMS ${VERSION} Community Edition for ${DISTRO}"
 REPO="eximeebpms-bpm"
 GITHUB_GROUP="public"
-ARTIFACT="eximeebpms-bpm-run"
+ARTIFACT="eximeebpms-bpm-${DISTRO}"
 ARTIFACT_VERSION="${VERSION}"
 
 # Determine if SNAPSHOT repo and version should be used
 if [ "${SNAPSHOT}" = "true" ]; then
     ARTIFACT_VERSION="${VERSION}-SNAPSHOT"
 fi
+
+ARTIFACT_GROUP="org.eximeebpms.bpm.${DISTRO}"
 
 # Download distro from GitHub Packages
 PROXY=""
@@ -39,15 +41,18 @@ fi
 # GitHub Packages URL with repository
 mvn dependency:get -B --global-settings /tmp/settings.xml \
     $PROXY \
-    -DgroupId="org.eximeebpms.bpm.run" -DartifactId="eximeebpms-bpm-run" \
+    -DgroupId="${ARTIFACT_GROUP}" -DartifactId="${ARTIFACT}" \
     -Dversion="${ARTIFACT_VERSION}" -Dpackaging="tar.gz" -Dtransitive=false
 
-cambpm_distro_file=$(find /m2-repository -name "eximeebpms-bpm-run-${ARTIFACT_VERSION}.tar.gz" -print | head -n 1)
+cambpm_distro_file=$(find /m2-repository -name "${ARTIFACT}-${ARTIFACT_VERSION}.tar.gz" -print | head -n 1)
 
 # Unpack distro to /eximeebpms directory
 mkdir -p /eximeebpms
-tar xzf "$cambpm_distro_file" -C /eximeebpms
-cp /tmp/eximeebpms-run.sh /eximeebpms/eximeebpms.sh
+case ${DISTRO} in
+    run*) tar xzf "$cambpm_distro_file" -C /eximeebpms;;
+    *)    tar xzf "$cambpm_distro_file" -C /eximeebpms server --strip 2;;
+esac
+cp /tmp/eximeebpms-${GROUP}.sh /eximeebpms/eximeebpms.sh
 
 # download and register database drivers from GitHub Packages
 mvn dependency:get -B --global-settings /tmp/settings.xml \
@@ -72,6 +77,16 @@ mvn dependency:copy -B \
     -Dartifact="org.postgresql:postgresql:${POSTGRESQL_VERSION}:jar" \
     -DoutputDirectory=/tmp/
 
-# Place drivers in run-specific location
-cp /tmp/mysql-connector-j-${MYSQL_VERSION}.jar /eximeebpms/configuration/userlib
-cp /tmp/postgresql-${POSTGRESQL_VERSION}.jar /eximeebpms/configuration/userlib
+# Copy to correct locations depending on distro type
+case ${DISTRO} in
+    run*)
+        cp /tmp/mysql-connector-j-${MYSQL_VERSION}.jar /eximeebpms/configuration/userlib
+        cp /tmp/postgresql-${POSTGRESQL_VERSION}.jar /eximeebpms/configuration/userlib
+        ;;
+    tomcat*)
+        cp /tmp/mysql-connector-j-${MYSQL_VERSION}.jar /eximeebpms/lib
+        cp /tmp/postgresql-${POSTGRESQL_VERSION}.jar /eximeebpms/lib
+        # remove default CATALINA_OPTS from environment settings
+        echo "" > /eximeebpms/bin/setenv.sh
+        ;;
+esac
