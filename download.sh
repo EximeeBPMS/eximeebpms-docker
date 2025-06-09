@@ -52,7 +52,7 @@ case ${DISTRO} in
     run*) tar xzf "$cambpm_distro_file" -C /eximeebpms;;
     *)    tar xzf "$cambpm_distro_file" -C /eximeebpms server --strip 2;;
 esac
-cp /tmp/eximeebpms-${GROUP}.sh /eximeebpms/eximeebpms.sh
+cp /tmp/eximeebpms-${DISTRO}.sh /eximeebpms/eximeebpms.sh
 
 # download and register database drivers from GitHub Packages
 mvn dependency:get -B --global-settings /tmp/settings.xml \
