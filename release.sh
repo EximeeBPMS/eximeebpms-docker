@@ -5,7 +5,7 @@ DISTRO=${DISTRO:-$(grep DISTRO= Dockerfile | cut -d = -f 2)}
 SNAPSHOT=${SNAPSHOT:-$(grep SNAPSHOT= Dockerfile | cut -d = -f 2)}
 PLATFORMS=${PLATFORMS:-linux/amd64}
 
-IMAGE='ghcr.io/eximeebpms/eximeebpms-bpm-platform'
+IMAGE='ghcr.io/eximeebpms/eximeebpms-bpm-platform-tomcat'
 
 function build_and_push {
     local tags=("$@")
