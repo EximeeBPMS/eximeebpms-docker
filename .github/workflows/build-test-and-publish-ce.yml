@@ -5,6 +5,11 @@ on:
       VERSION:
         description: 'Version to publish'
         required: true
+
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build-and-test:
     runs-on: self-hosted
