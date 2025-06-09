@@ -77,6 +77,6 @@ jobs:
           DISTRO: ${{ matrix.DISTRO }}
           SNAPSHOT: false
           PLATFORMS: linux/amd64
-          GHCR_PASSWORD: ${{ secrets[env.GITHUB_PAT_USER] }}
+          GHCR_PASSWORD: ${{ secrets.SECRET_PAT_RMASTALEREK }}
           GHCR_USERNAME:  ${{ github.actor }}
           VERSION: ${{ github.event.inputs.VERSION }}
