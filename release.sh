@@ -31,7 +31,9 @@ echo "${GHCR_PASSWORD}" | docker login ghcr.io -u "${GHCR_USERNAME}" --password-
 
 tags=()
 tags+=("${DISTRO}-${VERSION}")
-tags+=("${VERSION}")
-tags+=("latest")
+tags+=("${DISTRO}-latest")
+if [ "$DISTRO" == "run" ]; then
+  tags+=("latest")
+fi
 
 build_and_push "${tags[@]}"
