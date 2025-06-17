@@ -21,16 +21,19 @@ function build_and_push {
       printf -- "- $IMAGE:%s\n" "${tags[@]}" >> $GITHUB_STEP_SUMMARY
 }
 
-# check whether the CE image for distro was already released and exit in that case
-if [ $(docker manifest inspect $IMAGE:${DISTRO}-${VERSION} > /dev/null ; echo $?) == '0' ]; then
-    echo "Not pushing already released CE image"
-    exit 0
-fi
+## check whether the CE image for distro was already released and exit in that case
+#if [ $(docker manifest inspect $IMAGE:${DISTRO}-${VERSION} > /dev/null ; echo $?) == '0' ]; then
+#    echo "Not pushing already released CE image"
+#    exit 0
+#fi
 
 echo "${GHCR_PASSWORD}" | docker login ghcr.io -u "${GHCR_USERNAME}" --password-stdin
 
 tags=()
-tags+=("${VERSION}")
-tags+=("latest")
+tags+=("${DISTRO}-${VERSION}")
+tags+=("${DISTRO}-latest")
+if [ "$DISTRO" == "run" ]; then
+  tags+=("latest")
+fi
 
 build_and_push "${tags[@]}"
