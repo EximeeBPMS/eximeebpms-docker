@@ -66,12 +66,14 @@ RUN apk add --no-cache \
 
 RUN addgroup -g 1000 -S eximeebpms && \
     adduser -u 1000 -S eximeebpms -G eximeebpms -h /eximeebpms -s /bin/bash -D eximeebpms
-WORKDIR /eximeebpms
-USER eximeebpms
 
-ENTRYPOINT ["/sbin/tini", "--"]
-CMD ["./eximeebpms.sh"]
+WORKDIR /eximeebpms
 
 COPY --chown=eximeebpms:eximeebpms --from=builder /eximeebpms .
 
 RUN chmod +x /eximeebpms/eximeebpms.sh
+
+USER eximeebpms
+
+ENTRYPOINT ["/sbin/tini", "--"]
+CMD ["./eximeebpms.sh"]
