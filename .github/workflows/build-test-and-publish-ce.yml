@@ -51,7 +51,7 @@ jobs:
     needs: build-and-test
     strategy:
       matrix:
-        DISTRO: [tomcat]
+        DISTRO: [run, tomcat]
     steps:
       - name: Determine user and set secret
         run: |
