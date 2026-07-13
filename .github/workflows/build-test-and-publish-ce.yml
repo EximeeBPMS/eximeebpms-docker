@@ -46,6 +46,9 @@ jobs:
           DISTRO: ${{ matrix.DISTRO }}
           PLATFORM: amd64
           VERSION: ${{ github.event.inputs.VERSION }}
+      - name: Clean up Docker resources
+        if: always()
+        run: docker system prune -af --volumes
   publish:
     runs-on: self-hosted
     needs: build-and-test
@@ -85,3 +88,6 @@ jobs:
           GHCR_PASSWORD: ${{ secrets[env.GITHUB_PAT_USER] }}
           GHCR_USERNAME:  ${{ github.actor }}
           VERSION: ${{ github.event.inputs.VERSION }}
+      - name: Clean up Docker resources
+        if: always()
+        run: docker system prune -af --volumes
