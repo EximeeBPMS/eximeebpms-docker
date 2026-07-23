@@ -34,8 +34,22 @@ jobs:
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'failure'
     steps:
       - name: Set Event Message
+        env:
+          # Passed via env rather than interpolated directly into the script below:
+          # both are attacker-controllable free text (fork branch name / PR title) and
+          # could otherwise break out of the string and inject shell commands.
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
         run: |
           set -u
+
+          # Random per-run delimiter for the GITHUB_ENV heredocs below: msg/details
+          # embed attacker-influenced free text (e.g. a PR title set via the API can
+          # contain literal newlines, bypassing the UI's single-line restriction), so
+          # a fixed "KEY=value" line would let that text smuggle in extra env vars for
+          # every later step in this job. A delimiter generated at runtime can't be
+          # guessed by whoever authored the PR title before the job started.
+          gha_eof="EOF_$(cat /proc/sys/kernel/random/uuid | tr -d '-')"
 
           msg="🔔 New event of type *${{ github.event_name }}* detected!"
           details="Details: ${{ github.event.html_url || '-' }}"
@@ -79,7 +93,7 @@ jobs:
             ;;
 
             workflow_run)
-              msg="❌ Workflow *${{ github.event.workflow_run.name }}* failed on branch *${{ github.event.workflow_run.head_branch }}*!"
+              msg="❌ Workflow *${{ github.event.workflow_run.name }}* failed on branch *$HEAD_BRANCH*!"
               details="<${{ github.event.workflow_run.html_url }}|View run>"
             ;;
 
@@ -212,17 +226,17 @@ jobs:
               case "${{ github.event.action }}" in
                 submitted)
                   msg="💬️ A review was added to the Pull Request by <${{ github.server_url }}/${{ github.event.sender.login }}|${{ github.event.sender.login }}>!"
-                  details="PR: <${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.title }}>, <${{ github.event.review.html_url }}|Review>"
+                  details="PR: <${{ github.event.pull_request.html_url }}|$PR_TITLE>, <${{ github.event.review.html_url }}|Review>"
                 ;;
 
                 edited)
                   msg="✏️️ Pull Request review was modified by <${{ github.server_url }}/${{ github.event.sender.login }}|${{ github.event.sender.login }}>!"
-                  details="PR: <${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.title }}>, <${{ github.event.review.html_url }}|Review>"
+                  details="PR: <${{ github.event.pull_request.html_url }}|$PR_TITLE>, <${{ github.event.review.html_url }}|Review>"
                 ;;
 
                 dismissed)
                   msg="🚫 Pull Request review was dismissed by <${{ github.server_url }}/${{ github.event.sender.login }}|${{ github.event.sender.login }}>!"
-                  details="PR: <${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.title }}>"
+                  details="PR: <${{ github.event.pull_request.html_url }}|$PR_TITLE>"
                 ;;
               esac
             ;;
@@ -231,26 +245,36 @@ jobs:
               case "${{ github.event.action }}" in
                 created)
                   msg="💬️ A new comment was added to the Pull Request by <${{ github.server_url }}/${{ github.event.sender.login }}|${{ github.event.sender.login }}>!"
-                  details="PR: <${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.title }}>, <${{ github.event.comment.html_url }}|Comment>"
+                  details="PR: <${{ github.event.pull_request.html_url }}|$PR_TITLE>, <${{ github.event.comment.html_url }}|Comment>"
                 ;;
 
                 edited)
                   msg="✏️️ A comment has been modified by <${{ github.server_url }}/${{ github.event.sender.login }}|${{ github.event.sender.login }}> in the Pull Request!"
-                  details="PR: <${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.title }}>, <${{ github.event.comment.html_url }}|Comment>"
+                  details="PR: <${{ github.event.pull_request.html_url }}|$PR_TITLE>, <${{ github.event.comment.html_url }}|Comment>"
                 ;;
 
                 deleted)
                   msg="🗑️ A comment was deleted by <${{ github.server_url }}/${{ github.event.sender.login }}|${{ github.event.sender.login }}> in the Pull Request!"
-                  details="PR: <${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.title }}>"
+                  details="PR: <${{ github.event.pull_request.html_url }}|$PR_TITLE>"
                 ;;
               esac
             ;;
           esac
 
-          echo "EVENT_MSG=$msg" >> $GITHUB_ENV
-          echo "DETAILS=$details" >> $GITHUB_ENV
-          echo "HEADER_MSG=🔔 *New event* ${{ github.event.created_at }} 🔔" >> $GITHUB_ENV
-          echo "REPO_LINE=*Repository:* <${{ github.server_url }}/${{ github.repository }}|${{ github.repository }}>" >> $GITHUB_ENV
+          {
+            echo "EVENT_MSG<<$gha_eof"
+            echo "$msg"
+            echo "$gha_eof"
+            echo "DETAILS<<$gha_eof"
+            echo "$details"
+            echo "$gha_eof"
+            echo "HEADER_MSG<<$gha_eof"
+            echo "🔔 *New event* ${{ github.event.created_at }} 🔔"
+            echo "$gha_eof"
+            echo "REPO_LINE<<$gha_eof"
+            echo "*Repository:* <${{ github.server_url }}/${{ github.repository }}|${{ github.repository }}>"
+            echo "$gha_eof"
+          } >> "$GITHUB_ENV"
 
       - name: Check Slack secrets are configured
         # `secrets` isn't a recognized context in `if:` expressions, so the presence
@@ -269,6 +293,11 @@ jobs:
         # unrelated external PR red. Skip cleanly when they're unset.
         if: steps.slack-secrets.outputs.configured == 'true'
         uses: slackapi/slack-github-action@v4.0.0
+        env:
+          # secrets.* must only be referenced from an env: mapping, never inlined
+          # into a with:/run: expression directly - CodeQL flags toJSON(secrets.X)
+          # used inline as excessive secrets exposure.
+          SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
         with:
           # v4 dropped channel-id/SLACK_BOT_TOKEN-env in favor of a generic
           # Web API call: method + token, with the target channel now part
@@ -278,7 +307,7 @@ jobs:
           token: ${{ secrets.SLACK_BOT_TOKEN }}
           payload: |
             {
-              "channel": ${{ toJSON(secrets.SLACK_CHANNEL) }},
+              "channel": ${{ toJSON(env.SLACK_CHANNEL) }},
               "text": ${{ toJSON(env.EVENT_MSG) }},
               "blocks": [
                 {
