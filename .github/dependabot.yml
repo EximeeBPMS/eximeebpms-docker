@@ -10,8 +10,11 @@ updates:
     schedule:
       interval: "daily"
     open-pull-requests-limit: 5
+    # docker tags (e.g. "3.18") aren't reliably semver, so the semver-*-days
+    # cooldown keys aren't supported for this ecosystem - default-days is the
+    # only one that applies regardless of how the tag is classified.
     cooldown:
-      semver-patch-days: 5
+      default-days: 5
 
   - package-ecosystem: "github-actions"
     directory: "/"
