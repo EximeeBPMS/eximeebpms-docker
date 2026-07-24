@@ -21,7 +21,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
       - name: Expose GitHub Runtime
         uses: actions/github-script@v9
         with:
@@ -64,11 +64,11 @@ jobs:
         with:
           token: ${{ secrets[env.GITHUB_PAT_USER] }}
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
         with:
           platforms: amd64
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
       - name: Expose GitHub Runtime
         uses: actions/github-script@v9
         with:
