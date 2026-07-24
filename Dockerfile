@@ -1,4 +1,4 @@
-FROM alpine:3.18 AS builder
+FROM alpine:3.24 AS builder
 
 ARG VERSION
 ARG SNAPSHOT
@@ -28,7 +28,7 @@ COPY eximeebpms-lib.sh /eximeebpms/
 
 ##### FINAL IMAGE #####
 
-FROM alpine:3.18
+FROM alpine:3.24
 
 ARG VERSION
 
