@@ -38,13 +38,47 @@ if [ -n "$MAVEN_PROXY_HOST" ]; then
     fi
 fi
 
-# GitHub Packages URL with repository
-mvn dependency:get -B --global-settings /tmp/settings.xml \
-    $PROXY \
-    -DgroupId="${ARTIFACT_GROUP}" -DartifactId="${ARTIFACT}" \
-    -Dversion="${ARTIFACT_VERSION}" -Dpackaging="tar.gz" -Dtransitive=false
+# Fetch the distribution archive.
+#
+# Released versions come from the GitHub Release of the matching tag: as of 1.4.0 the server
+# distributions are published as release assets, not Maven Central artifacts (BPMS-760, and the
+# same place operaton publishes its own). Central keeps the consumable libraries; a 230MB
+# application-server install is not something anyone resolves as a <dependency>, and staging all
+# of them made the release's upload bundle too large to encode within the CI runner's memory.
+#
+# SNAPSHOT builds still come from Central's snapshot repository - snapshots are published by a
+# plain deploy with no bundle involved, and there is no GitHub Release to attach them to.
+if [ "${SNAPSHOT}" = "true" ]; then
+    mvn dependency:get -B --global-settings /tmp/settings.xml \
+        $PROXY \
+        -DgroupId="${ARTIFACT_GROUP}" -DartifactId="${ARTIFACT}" \
+        -Dversion="${ARTIFACT_VERSION}" -Dpackaging="tar.gz" -Dtransitive=false
 
-cambpm_distro_file=$(find /m2-repository -name "${ARTIFACT}-${ARTIFACT_VERSION}.tar.gz" -print | head -n 1)
+    cambpm_distro_file=$(find /m2-repository -name "${ARTIFACT}-${ARTIFACT_VERSION}.tar.gz" -print | head -n 1)
+else
+    # wget reads proxy settings from the environment, not from the -D flags Maven takes.
+    if [ -n "$MAVEN_PROXY_HOST" ]; then
+        proxy_auth=""
+        if [ -n "$MAVEN_PROXY_USER" ]; then
+            proxy_auth="${MAVEN_PROXY_USER}"
+            [ -n "$MAVEN_PROXY_PASSWORD" ] && proxy_auth="${proxy_auth}:${MAVEN_PROXY_PASSWORD}"
+            proxy_auth="${proxy_auth}@"
+        fi
+        http_proxy="http://${proxy_auth}${MAVEN_PROXY_HOST}:${MAVEN_PROXY_PORT}"
+        https_proxy="$http_proxy"
+        export http_proxy https_proxy
+        echo "PROXY set for wget"
+    fi
+
+    cambpm_distro_file="/tmp/${ARTIFACT}-${ARTIFACT_VERSION}.tar.gz"
+    wget -O "$cambpm_distro_file" \
+        "https://github.com/EximeeBPMS/eximeebpms/releases/download/v${ARTIFACT_VERSION}/${ARTIFACT}-${ARTIFACT_VERSION}.tar.gz"
+fi
+
+if [ ! -s "$cambpm_distro_file" ]; then
+    echo "ERROR: distribution archive for ${ARTIFACT} ${ARTIFACT_VERSION} was not downloaded"
+    exit 1
+fi
 
 # Unpack distro to /eximeebpms directory
 mkdir -p /eximeebpms
