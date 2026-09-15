@@ -122,8 +122,9 @@ disables Swagger UI by default.
 Our docker images are using a LTS OpenJDK version supported by
 EximeeBPMS. This currently means:
 
- - EximeeBPMS 1.0 or later will be based on OpenJDK 17.
-   - EximeeBPMS 1.0 image for EximeeBPMS Run is supported only for JDK 17.
+ - EximeeBPMS 1.4 or later is based on OpenJDK 21, following the engine's own
+   baseline move from Java 17 to Java 21 in 1.4.0.
+ - EximeeBPMS 1.0 through 1.3 is based on OpenJDK 17.
 
 While all the OpenJDK versions supported by EximeeBPMS will work with the exceptions specified above,
 we will not provide ready to use images for them.
