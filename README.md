@@ -352,3 +352,12 @@ Apache License, Version 2.0
 
 [//]: # ([docker registry]: https://github.com/EximeeBPMS/eximeebpms-docker/pkgs/container/eximeebpms-bpm-platform)
 [//]: # ([docker tags]: https://github.com/EximeeBPMS/eximeebpms-docker/pkgs/container/eximeebpms-bpm-platform/tags)
+
+## README view analytics
+
+This public README includes a [Scarf tracking image](https://docs.scarf.sh/web-traffic/)
+to estimate interest in this repository. GitHub's image proxy and caching limit
+counts and company attribution; these are not unique-reader or installation statistics.
+
+<img alt="" width="1" height="1" referrerpolicy="no-referrer"
+     src="https://static.scarf.sh/a.png?x-pxid=b3145a92-ad3c-4f20-bdbf-ae403eb3eb8c&amp;page=https%3A%2F%2Fgithub.com%2FEximeeBPMS%2Feximeebpms-docker" />
