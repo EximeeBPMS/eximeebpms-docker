@@ -7,7 +7,6 @@ ARG DISTRO
 ARG MAVEN_PROXY_HOST
 ARG MAVEN_PROXY_PORT
 ARG MAVEN_PROXY_USER
-ARG MAVEN_PROXY_PASSWORD
 
 ARG POSTGRESQL_VERSION
 ARG MYSQL_VERSION
@@ -22,7 +21,7 @@ RUN apk add --no-cache \
 
 COPY settings.xml download.sh eximeebpms-run.sh eximeebpms-tomcat.sh /tmp/
 
-RUN /tmp/download.sh
+RUN --mount=type=secret,id=maven_proxy_password /tmp/download.sh
 COPY eximeebpms-lib.sh /eximeebpms/
 
 
@@ -50,13 +49,16 @@ ENV JAVA_OPTS=""
 
 EXPOSE 8080 8000 9404
 
+# The minimum JRE version is the first with the fix for CVE-2026-114938 (JDK Compiler);
+# apk fails the build rather than install an older package.
+#
 # Downgrading wait-for-it is necessary until this PR is merged
 # https://github.com/vishnubob/wait-for-it/pull/68
 RUN apk add --no-cache \
         bash \
         ca-certificates \
         curl \
-        openjdk25-jre-headless \
+        'openjdk25-jre-headless>=25.0.5.1_p2-r0' \
         tzdata \
         tini \
         xmlstarlet \
