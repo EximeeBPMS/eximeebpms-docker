@@ -306,7 +306,12 @@ You can pass the following arguments to set proxy settings to Maven:
 * `MAVEN_PROXY_HOST`
 * `MAVEN_PROXY_PORT`
 * `MAVEN_PROXY_USER`
-* `MAVEN_PROXY_PASSWORD`
+
+For an authenticated proxy, supply the password using the BuildKit secret
+`maven_proxy_password`. The former `--build-arg MAVEN_PROXY_PASSWORD` is no
+longer supported. Export `PROXY_PASSWORD` securely in your shell before building;
+omit the secret option for a proxy without a password. The secret is available
+only during the download step and is not stored as an image build argument.
 
 Example for a released version of a community edition:
 
@@ -317,7 +322,7 @@ docker build -t eximeebpms \
   --build-arg MAVEN_PROXY_HOST=${PROXY_HOST} \
   --build-arg MAVEN_PROXY_PORT=${PROXY_PORT} \
   --build-arg MAVEN_PROXY_USER=${PROXY_USER} \
-  --build-arg MAVEN_PROXY_PASSWORD=${PROXY_PASSWORD} \
+  --secret id=maven_proxy_password,env=PROXY_PASSWORD \
   .
 ```
 ### Override MySQL and PostgreSQL driver versions. 
