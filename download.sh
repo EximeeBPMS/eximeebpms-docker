@@ -1,4 +1,12 @@
-#!/bin/sh -ex
+#!/bin/sh -e
+
+# Never trace commands: proxy credentials are expanded below.
+set +x
+
+MAVEN_PROXY_PASSWORD=""
+if [ -f /run/secrets/maven_proxy_password ]; then
+    MAVEN_PROXY_PASSWORD=$(cat /run/secrets/maven_proxy_password)
+fi
 
 echo "Downloading EximeeBPMS ${VERSION} Community Edition for ${DISTRO}"
 REPO="eximeebpms-bpm"
@@ -32,11 +40,19 @@ if [ -n "$MAVEN_PROXY_HOST" ]; then
         echo "PROXY set Maven proxyUser"
     fi
     if [ -n "$MAVEN_PROXY_PASSWORD" ]; then
-        PROXY="$PROXY -Dhttp.proxyPassword=$MAVEN_PROXY_PASSWORD"
-        PROXY="$PROXY -Dhttps.proxyPassword=$MAVEN_PROXY_PASSWORD"
         echo "PROXY set Maven proxyPassword"
     fi
 fi
+
+# Keep passwords containing whitespace or glob characters in a single argument.
+mvn_proxy() {
+    if [ -n "$MAVEN_PROXY_HOST" ] && [ -n "$MAVEN_PROXY_PASSWORD" ]; then
+        mvn "-Dhttp.proxyPassword=$MAVEN_PROXY_PASSWORD" \
+            "-Dhttps.proxyPassword=$MAVEN_PROXY_PASSWORD" "$@"
+    else
+        mvn "$@"
+    fi
+}
 
 # Fetch the distribution archive.
 #
@@ -49,7 +65,7 @@ fi
 # SNAPSHOT builds still come from Central's snapshot repository - snapshots are published by a
 # plain deploy with no bundle involved, and there is no GitHub Release to attach them to.
 if [ "${SNAPSHOT}" = "true" ]; then
-    mvn dependency:get -B --global-settings /tmp/settings.xml \
+    mvn_proxy dependency:get -B --global-settings /tmp/settings.xml \
         $PROXY \
         -DgroupId="${ARTIFACT_GROUP}" -DartifactId="${ARTIFACT}" \
         -Dversion="${ARTIFACT_VERSION}" -Dpackaging="tar.gz" -Dtransitive=false
@@ -58,20 +74,19 @@ if [ "${SNAPSHOT}" = "true" ]; then
 else
     # wget reads proxy settings from the environment, not from the -D flags Maven takes.
     if [ -n "$MAVEN_PROXY_HOST" ]; then
-        proxy_auth=""
-        if [ -n "$MAVEN_PROXY_USER" ]; then
-            proxy_auth="${MAVEN_PROXY_USER}"
-            [ -n "$MAVEN_PROXY_PASSWORD" ] && proxy_auth="${proxy_auth}:${MAVEN_PROXY_PASSWORD}"
-            proxy_auth="${proxy_auth}@"
-        fi
-        http_proxy="http://${proxy_auth}${MAVEN_PROXY_HOST}:${MAVEN_PROXY_PORT}"
+        http_proxy="http://${MAVEN_PROXY_HOST}:${MAVEN_PROXY_PORT}"
         https_proxy="$http_proxy"
         export http_proxy https_proxy
         echo "PROXY set for wget"
     fi
 
     cambpm_distro_file="/tmp/${ARTIFACT}-${ARTIFACT_VERSION}.tar.gz"
-    wget -O "$cambpm_distro_file" \
+    # Keep credentials out of the proxy URL: wget prints malformed URLs in errors.
+    set --
+    if [ -n "$MAVEN_PROXY_HOST" ] && [ -n "$MAVEN_PROXY_USER" ]; then
+        set -- "--proxy-user=$MAVEN_PROXY_USER" "--proxy-password=$MAVEN_PROXY_PASSWORD"
+    fi
+    wget "$@" -O "$cambpm_distro_file" \
         "https://github.com/EximeeBPMS/eximeebpms/releases/download/v${ARTIFACT_VERSION}/${ARTIFACT}-${ARTIFACT_VERSION}.tar.gz"
 fi
 
@@ -89,7 +104,7 @@ esac
 cp /tmp/eximeebpms-${DISTRO}.sh /eximeebpms/eximeebpms.sh
 
 # download and register database drivers from GitHub Packages
-mvn dependency:get -B --global-settings /tmp/settings.xml \
+mvn_proxy dependency:get -B --global-settings /tmp/settings.xml \
     $PROXY \
     -DgroupId="org.eximeebpms.bpm" -DartifactId="eximeebpms-database-settings" \
     -Dversion="${ARTIFACT_VERSION}" -Dpackaging="pom" -Dtransitive=false
@@ -102,11 +117,11 @@ if [ -z "$POSTGRESQL_VERSION" ]; then
     POSTGRESQL_VERSION=$(xmlstarlet sel -t -v //_:version.postgresql "$cambpmdbsettings_pom_file")
 fi
 
-mvn dependency:copy -B \
+mvn_proxy dependency:copy -B \
     $PROXY \
     -Dartifact="com.mysql:mysql-connector-j:${MYSQL_VERSION}:jar" \
     -DoutputDirectory=/tmp/
-mvn dependency:copy -B \
+mvn_proxy dependency:copy -B \
     $PROXY \
     -Dartifact="org.postgresql:postgresql:${POSTGRESQL_VERSION}:jar" \
     -DoutputDirectory=/tmp/
