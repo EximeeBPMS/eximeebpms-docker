@@ -5,6 +5,10 @@ on:
       VERSION:
         description: 'Version to publish'
         required: true
+      TAG_LATEST:
+        description: 'Move the latest tags to this version; untick when republishing an older version'
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -93,6 +97,7 @@ jobs:
           GHCR_PASSWORD: ${{ secrets[env.GITHUB_PAT_USER] }}
           GHCR_USERNAME:  ${{ github.actor }}
           VERSION: ${{ github.event.inputs.VERSION }}
+          TAG_LATEST: ${{ github.event.inputs.TAG_LATEST }}
       - name: Clean up Docker resources
         if: always()
         run: docker system prune -af --volumes

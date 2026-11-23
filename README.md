@@ -54,7 +54,7 @@ to enable authentication for the REST API.
 The following tag schema is used. The user has the choice between different
 application server distributions of EximeeBPMS.
 
-- `latest`: Always the latest minor release of EximeeBPMS.
+- `latest`: Always the latest minor release of EximeeBPMS. A publish moves it unless the `TAG_LATEST` input is `false`, which is how an older version is republished without taking `latest` back.
 - `${VERSION}`: A specific version of EximeeBPMS.
 
 ## EximeeBPMS configuration
