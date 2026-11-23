@@ -5,6 +5,10 @@ on:
       VERSION:
         description: 'Version to publish'
         required: true
+      TAG_LATEST:
+        description: 'Move the latest tags to this version; untick when republishing an older version'
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -111,6 +115,7 @@ jobs:
           digest=$(docker buildx imagetools inspect "${image}:${{ matrix.DISTRO }}-${{ github.event.inputs.VERSION }}" --format '{{.Manifest.Digest}}')
           cosign sign --yes "${image}@${digest}"
           echo "Signed ${image}@${digest}" >> "$GITHUB_STEP_SUMMARY"
+          TAG_LATEST: ${{ github.event.inputs.TAG_LATEST }}
       - name: Clean up Docker resources
         if: always()
         run: docker system prune -af --volumes
