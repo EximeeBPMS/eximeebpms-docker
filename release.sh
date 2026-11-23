@@ -4,6 +4,12 @@ VERSION=${VERSION:-$(grep VERSION= Dockerfile | head -n1 | cut -d = -f 2)}
 DISTRO=${DISTRO:-$(grep DISTRO= Dockerfile | cut -d = -f 2)}
 SNAPSHOT=${SNAPSHOT:-$(grep SNAPSHOT= Dockerfile | cut -d = -f 2)}
 PLATFORMS=${PLATFORMS:-linux/amd64}
+# 'false' publishes the version tags only, so republishing an older version leaves `latest` where it is.
+TAG_LATEST=${TAG_LATEST:-true}
+case "${TAG_LATEST}" in
+    true|false) ;;
+    *) echo "TAG_LATEST must be 'true' or 'false', got '${TAG_LATEST}'" >&2; exit 1 ;;
+esac
 
 IMAGE='ghcr.io/eximeebpms/eximeebpms-bpm-platform'
 
@@ -31,9 +37,11 @@ echo "${GHCR_PASSWORD}" | docker login ghcr.io -u "${GHCR_USERNAME}" --password-
 
 tags=()
 tags+=("${DISTRO}-${VERSION}")
-tags+=("${DISTRO}-latest")
-if [ "$DISTRO" == "run" ]; then
-  tags+=("latest")
+if [ "${TAG_LATEST}" == "true" ]; then
+  tags+=("${DISTRO}-latest")
+  if [ "$DISTRO" == "run" ]; then
+    tags+=("latest")
+  fi
 fi
 
 build_and_push "${tags[@]}"
