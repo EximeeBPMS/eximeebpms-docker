@@ -1,0 +1,45 @@
+name: Sign published CE images
+# Signs images that were published before build-test-and-publish-ce.yml signed them (CE 1.4.0, 1.4.1).
+# Signs what the tag points at now; it does not rebuild or move any tag. Runs from main only, so the
+# certificate identity of every signature made here ends in @refs/heads/main.
+on:
+  workflow_dispatch:
+    inputs:
+      TAGS:
+        description: 'Space-separated tags to sign, e.g. "run-1.4.1 tomcat-1.4.1 run-1.4.0 tomcat-1.4.0"'
+        required: true
+
+permissions: {}
+
+jobs:
+  sign:
+    if: github.ref == 'refs/heads/main'
+    runs-on: github-actions-runner-new
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    steps:
+      - name: Determine user and set secret
+        run: |
+          echo "GITHUB_PAT_USER=SECRET_PAT_${{ github.actor }}" >> $GITHUB_ENV
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v4.1.2
+      - name: Sign the images
+        # The images were pushed with the actor's PAT (release.sh), so the signature is pushed with it too:
+        # GITHUB_TOKEN can write to the package only if the repository has Actions access to it.
+        env:
+          GHCR_PASSWORD: ${{ secrets[env.GITHUB_PAT_USER] }}
+          GHCR_USERNAME: ${{ github.actor }}
+          TAGS: ${{ github.event.inputs.TAGS }}
+        run: |
+          set -euo pipefail
+          image=ghcr.io/eximeebpms/eximeebpms-bpm-platform
+          echo "${GHCR_PASSWORD}" | docker login ghcr.io -u "${GHCR_USERNAME}" --password-stdin
+          set -f
+          for tag in $TAGS; do
+            [[ "$tag" =~ ^[A-Za-z0-9._-]+$ ]] || { echo "Invalid tag: $tag" >&2; exit 1; }
+            digest=$(docker buildx imagetools inspect "${image}:${tag}" --format '{{.Manifest.Digest}}')
+            cosign sign --yes "${image}@${digest}"
+            echo "Signed ${image}:${tag} (${digest})" >> "$GITHUB_STEP_SUMMARY"
+          done

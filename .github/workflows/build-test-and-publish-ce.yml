@@ -61,6 +61,10 @@ jobs:
   publish:
     runs-on: github-actions-runner-new
     needs: build-and-test
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
     strategy:
       matrix:
         DISTRO: [run, tomcat]
@@ -83,7 +87,7 @@ jobs:
         with:
           script: |
             Object.keys(process.env).forEach(function (key) {
-              if (key.startsWith('ACTIONS_')) {
+              if (key.startsWith('ACTIONS_') && !key.startsWith('ACTIONS_ID_TOKEN_')) {
                 core.info(`${key}=${process.env[key]}`);
                 core.exportVariable(key, process.env[key]);
               }
@@ -97,6 +101,20 @@ jobs:
           GHCR_PASSWORD: ${{ secrets[env.GITHUB_PAT_USER] }}
           GHCR_USERNAME:  ${{ github.actor }}
           VERSION: ${{ github.event.inputs.VERSION }}
+      # Same pin as eximeebpms-k8s's lint-test-release.yml; keyless signing with the job's OIDC token.
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v4.1.2
+      - name: Sign the published image
+        # release.sh has already logged in to ghcr.io; cosign reads the same Docker credentials.
+        # All tags of the distro point at one digest, so signing the digest covers them all.
+        # cosign reads ACTIONS_ID_TOKEN_REQUEST_* from the step environment itself; the "Expose GitHub
+        # Runtime" step above deliberately does not export them.
+        run: |
+          set -euo pipefail
+          image=ghcr.io/eximeebpms/eximeebpms-bpm-platform
+          digest=$(docker buildx imagetools inspect "${image}:${{ matrix.DISTRO }}-${{ github.event.inputs.VERSION }}" --format '{{.Manifest.Digest}}')
+          cosign sign --yes "${image}@${digest}"
+          echo "Signed ${image}@${digest}" >> "$GITHUB_STEP_SUMMARY"
           TAG_LATEST: ${{ github.event.inputs.TAG_LATEST }}
       - name: Clean up Docker resources
         if: always()
