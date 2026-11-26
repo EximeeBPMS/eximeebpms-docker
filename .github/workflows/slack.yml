@@ -292,7 +292,7 @@ jobs:
         # SLACK_CHANNEL would be empty and this step would fail, turning an
         # unrelated external PR red. Skip cleanly when they're unset.
         if: steps.slack-secrets.outputs.configured == 'true'
-        uses: slackapi/slack-github-action@v4.0.0
+        uses: slackapi/slack-github-action@v4.1.0
         env:
           # secrets.* must only be referenced from an env: mapping, never inlined
           # into a with:/run: expression directly - CodeQL flags toJSON(secrets.X)
